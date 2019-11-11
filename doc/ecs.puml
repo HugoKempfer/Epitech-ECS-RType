@@ -1,0 +1,66 @@
+@startuml
+
+class World {
+        + registerSystem(System)
+        + createEntity() -> Entity
+        + registerRessource<T : Ressource>()
+
+        + StateMachine states
+        -- Internal logic --
+        - Dispatcher dispatcher
+        - Vec<Entity> entityStorage
+        - Map<ComponentType, Vec<Component>> componentStorage
+        - Map<String, Ressource>
+}
+
+class Dispatcher {
+        - World &world
+        - ThreadPool executors
+
+        - buildExecutionSequence() -> SystemExecutionSequence
+        + dispatchSystems()
+}
+
+class StateMachine {
+        - Stack<State> states
+
+        + push(State)
+        + emplace(State)
+        + pop()
+}
+
+class Entity {
+        + Id id
+        - World &world
+
+        + addComponent<T: Component>(Component)
+        + removeComponent<T: Component>()
+}
+
+abstract class Component {
+        + UUID typeID
+        + ID entityID
+}
+
+abstract class System {
+        + Id id
+        + Set<UUID> writableStorageID
+        + Set<UUID> executeOnState
+        + Enum runningState
+
+        {abstract} + run(const World &world, Map<UUID, Component> components)
+}
+
+abstract class State {
+        + UUID stateID
+        + Set<UUID> ressourceAccess
+
+       {abstract} +  onStart()
+       {abstract} +  onPause()
+       {abstract} +  onResume()
+       {abstract} +  onStop()
+       {abstract} +  onUpdate()
+       {abstract} +  onFixedUpdate()
+}
+
+@enduml
