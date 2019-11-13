@@ -10,20 +10,37 @@
 
 #include <iostream>
 #include <unordered_set>
-
-class World;
+#include <mutex>
+#include "concepts_impl.hpp"
 
 namespace Engine {
+	class Component;
+	class World;
+
 	class Entity
 	{
 	public:
-		Entity(int64_t id, World &world) : _id(id), _world(world) {};
+		Entity() = delete;
+		Entity(int64_t id, World &world) : _id(id), _world(world) {}
+		Entity(const Entity &);
 		~Entity() = default;
 
+		template <typename T, typename ... Args> requires derived_from<T, Component>
+		Entity &addComponent(Args && ...args)
+		{
+			T instance = T(std::forward<Args>(args)...);
+
+			this->processComponent(instance);
+			return *this;
+		}
+
 	private:
-		int64_t _id;
+		void processComponent(Component &);
+
+		const int64_t _id;
 		World &_world;
-		std::unordered_set<int> _boundComponentsType;
+		std::mutex _componentProcess;
+		std::unordered_set<int64_t> _boundComponentsType;
 	};
 }
 

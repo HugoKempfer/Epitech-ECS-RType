@@ -9,40 +9,50 @@
 #include <mutex>
 #include <queue>
 #include <vector>
-#include <functional>
 #include <unordered_map>
 #include "engine/game_storage.hpp"
 
-using namespace Engine;
 using std::mutex;
 
-int &EntityStorage::add() {
-	std::lock_guard<mutex> lock(_entityProcessing);
-
-	_entities[_idAI] = 0;
-	/* TODO: change 0 ofr actual entity class */
-	return _entities.at(_idAI++);
-}
-
-void EntityStorage::doRemove(int id)
+namespace Engine
 {
-	std::lock_guard<mutex> lock(_entityProcessing);
+	EntityStorage::EntityStorage(World &world)
+		: _world(world)
+	{}
 
-	_removeQueue.push(id);
-}
+	Entity &EntityStorage::add() {
+		std::lock_guard<mutex> lock(_entityProcessing);
+		const int64_t id = _idAI++;
 
-void EntityStorage::processRemoval()
-{
-	std::lock_guard<mutex> lock(_entityProcessing);
+		return _entities.insert({id, Entity(id, _world)}).first->second;
+	}
 
-	while (!_removeQueue.empty()) {
-		if (!_removeAll) {
-			_entities.erase(_removeQueue.front());
+	void EntityStorage::doRemove(int id)
+	{
+		std::lock_guard<mutex> lock(_entityProcessing);
+
+		_removeQueue.push(id);
+	}
+
+	void EntityStorage::processRemoval()
+	{
+		std::lock_guard<mutex> lock(_entityProcessing);
+
+		while (!_removeQueue.empty()) {
+			if (!_removeAll) {
+				_entities.erase(_removeQueue.front());
+			}
+			_removeQueue.pop();
 		}
-		_removeQueue.pop();
+		if (_removeAll) {
+			_entities.clear();
+			_removeAll = false;
+		}
 	}
-	if (_removeAll) {
-		_entities.clear();
-		_removeAll = false;
+
+	const Entity &EntityStorage::operator[](std::size_t index) const
+	{
+		return _entities.at(index);
 	}
-}
+
+} /* Engine */

@@ -13,30 +13,34 @@
 #include <queue>
 #include <atomic>
 #include <unordered_map>
+#include "entity.hpp"
 
 namespace Engine {
+	class World;
+
 	class EntityStorage
 	{
 	public:
-		EntityStorage() = default;
+		EntityStorage() = delete;
+		EntityStorage(World &world);
 		~EntityStorage() = default;
 
-		int &add();
+		Entity &add();
 		void doRemove(int id);
 		void removeAll() { _removeAll = true; }
-		const int &operator[](std::size_t index) const { return _entities.at(index); }
 
+		const Entity &operator[](std::size_t index) const;
 	private:
 		void processRemoval();
 
+		World &_world;
 		std::atomic_bool _removeAll = false;
 		int64_t _idAI = 0; // write only under mutex lock
 		std::mutex _entityProcessing;
 		std::queue<int64_t> _removeQueue;
-		std::unordered_map<int64_t, int> _entities; /*! TODO: Change for real entity class
-									 *  \todo Change for real entity class
-									 */
-		friend class World;
+		std::unordered_map<int64_t, Entity> _entities;
+
+		friend class World; //Let World access the private method processRemoval
 	};
 }
 
