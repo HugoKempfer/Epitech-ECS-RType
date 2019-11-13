@@ -6,8 +6,8 @@
 */
 
 #include "engine/component.hpp"
+#include "engine/world.hpp"
 
 namespace Engine
 {
-
 } /* Engine */

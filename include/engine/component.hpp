@@ -12,23 +12,20 @@
 #include <atomic>
 #include "concepts_impl.hpp"
 #include "world.hpp"
+#include "storable.hpp"
 
 namespace Engine
 {
-
-	class Component
+	template <typename Item>
+	class Component : public Storable
 	{
 	public:
 		Component() = delete;
 
-		template <typename Child> requires derived_from<Child, Component>
-		Component(World &world, int64_t entityId)
-			: _world(world), _entityId(entityId), componentTypeUUID(_world.uuidGenerator.get<Child>())
-		{}
-
+	Component(World &world, int64_t entityId)
+		: _world(world), _entityId(entityId), Storable(world.uuidCtx, world.uuidCtx.get<Item>())
+	{}
 		virtual ~Component();
-
-		const int64_t componentTypeUUID;
 
 	private:
 		World &_world;

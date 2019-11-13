@@ -12,8 +12,10 @@
 #include <unordered_set>
 #include <mutex>
 #include "concepts_impl.hpp"
+#include "storable.hpp"
 
 namespace Engine {
+	template <typename Item>
 	class Component;
 	class World;
 
@@ -25,7 +27,7 @@ namespace Engine {
 		Entity(const Entity &);
 		~Entity() = default;
 
-		template <typename T, typename ... Args> requires derived_from<T, Component>
+		template <typename T, typename ... Args> requires derived_from<T, Component<T>>
 		Entity &addComponent(Args && ...args)
 		{
 			T instance = T(std::forward<Args>(args)...);
@@ -35,7 +37,7 @@ namespace Engine {
 		}
 
 	private:
-		void processComponent(Component &);
+		void processComponent(Storable &);
 
 		const int64_t _id;
 		World &_world;

@@ -11,6 +11,7 @@
 #include "engine/game_storage.hpp"
 #include "engine/component.hpp"
 #include "engine/entity.hpp"
+#include "engine/storable.hpp"
 
 namespace Engine {
 	World::World(int initialState)
@@ -33,13 +34,13 @@ namespace Engine {
 	void World::run()
 	{}
 
-	void World::storeComponent(Component &component)
+	void World::storeComponent(Storable &component)
 	{
-		if (!_components.contains(component.componentTypeUUID)) {
-			_components.insert({component.componentTypeUUID, std::vector<Component>()});
+		if (!_components.contains(component.UUID)) {
+			_components.insert({component.UUID, std::vector<Storable>()});
 		}
 		try {
-			auto storage = _components.at(component.componentTypeUUID);
+			auto storage = _components.at(component.UUID);
 			storage.push_back(component);
 		} catch(std::out_of_range e) {
 			std::cerr << e.what() << std::endl;

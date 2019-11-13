@@ -14,11 +14,11 @@
 
 namespace Engine
 {
-	class UUID
+	class UUIDContext
 	{
 	public:
-		UUID() = default;
-		~UUID() = default;
+		UUIDContext() = default;
+		~UUIDContext() = default;
 
 		template <typename Type>
 		int64_t get()

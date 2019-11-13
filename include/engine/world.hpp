@@ -14,10 +14,10 @@
 #include "game_storage.hpp"
 #include "concepts_impl.hpp"
 #include "uuid.hpp"
+#include "storable.hpp"
 
 namespace Engine {
 
-	class Component;
 	class Entity;
 
 	class World
@@ -30,16 +30,15 @@ namespace Engine {
 		void registerSystem();
 		void registerRessource();
 		Entity &createEntity();
-		void storeComponent(Component &);
+		void storeComponent(Storable &);
 		void run();
 
-		UUID uuidGenerator;
+		UUIDContext uuidCtx;
 
 	private:
-
 		//dispatcher
 		EntityStorage _entities;
-		std::unordered_map<int64_t, std::vector<Component>> _components;
+		std::unordered_map<int64_t, std::vector<Storable>> _components;
 		//ressourceStorage
 	};
 }

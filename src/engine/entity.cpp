@@ -17,12 +17,12 @@ namespace Engine
 		: _id(old._id), _world(old._world), _boundComponentsType(old._boundComponentsType)
 	{}
 
-	void Entity::processComponent(Component &component)
+	void Entity::processComponent(Storable &component)
 	{
 		std::lock_guard<std::mutex> lock(_componentProcess);
 
 		_world.storeComponent(component);
-		_boundComponentsType.insert(component.componentTypeUUID);
+		_boundComponentsType.insert(component.UUID);
 	}
 
 } /* Engine */
