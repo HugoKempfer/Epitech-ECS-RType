@@ -11,8 +11,12 @@
 #include <iostream>
 #include <unordered_set>
 #include <stack>
+#include <vector>
+#include <functional>
 #include "storable.hpp"
 #include "world.hpp"
+
+using std::reference_wrapper;
 
 namespace Engine
 {
@@ -60,19 +64,26 @@ namespace Engine
 		template <typename T> requires derived_from<T, State<T>>
 		void push(T newState)
 		{
-			/* TODO: Handle new state */
+			if (!_states.empty()) {
+				_states.top().get().onPause();
+			}
+
+			_states.push(newState);
 		}
 
 		template <typename T> requires derived_from<T, State<T>>
 		void emplace(T newState)
 		{
-			/* TODO: Handle emplace state */
+			if (!_states.empty()) {
+				_states.top().get().onStop();
+			}
+			_states.emplace(newState);
 		}
 
 		void pop();
 
 	private:
-		std::stack<IActionableState &> _states;
+		std::stack<reference_wrapper<IActionableState>> _states;
 	};
 
 } /* Engine */

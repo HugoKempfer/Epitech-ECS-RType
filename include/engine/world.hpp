@@ -15,6 +15,7 @@
 #include "concepts_impl.hpp"
 #include "uuid.hpp"
 #include "storable.hpp"
+#include "state.hpp"
 
 namespace Engine {
 
@@ -37,6 +38,7 @@ namespace Engine {
 
 	private:
 		//dispatcher
+		StateMachine _states;
 		EntityStorage _entities;
 		std::unordered_map<int64_t, std::vector<Storable>> _components;
 		//ressourceStorage
