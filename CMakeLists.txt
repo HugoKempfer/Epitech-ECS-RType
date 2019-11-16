@@ -1,5 +1,7 @@
 project(RType)
 
+enable_testing()
+
 cmake_minimum_required(VERSION 3.1.0)
 set(CMAKE_CXX_STANDARD 20)
 add_definitions("-fPIC")
@@ -23,11 +25,18 @@ file(GLOB_RECURSE CLIENT
 		"src/client/*.cpp",
 		)
 
+file(GLOB_RECURSE TEST_ENGINE
+		"tests/engine/*.cpp"
+		)
 
 add_library(engine STATIC ${ENGINE})
 
 add_executable(r-type_server ${SERVER})
 add_executable(r-type_client ${CLIENT})
+add_executable(engine_test ${TEST_ENGINE})
 
+target_link_libraries(engine_test criterion engine)
 target_link_libraries(r-type_server ${CONAN_LIBS} engine)
 target_link_libraries(r-type_client ${CONAN_LIBS} engine)
+
+add_test(world bin/engine_test "")
