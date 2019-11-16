@@ -1,6 +1,8 @@
 #include <criterion/criterion.h>
+#include "engine/world.hpp"
 
-Test(compile, first)
+Test(World, instance)
 {
-	cr_assert(1 == 1);
+	Engine::World world;
+	world.run();
 }

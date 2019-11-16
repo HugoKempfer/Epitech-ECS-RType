@@ -26,7 +26,7 @@ namespace Engine
 	{
 	public:
 		IActionableState() = default;
-		virtual ~IActionableState();
+		virtual ~IActionableState() = default;
 
 		virtual void onStart() = 0;
 		virtual void onPause() = 0;

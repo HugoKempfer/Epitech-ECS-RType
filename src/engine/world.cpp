@@ -7,17 +7,19 @@
 
 #include <unordered_map>
 #include <vector>
-#include "engine/world.hpp"
 #include "engine/game_storage.hpp"
 #include "engine/component.hpp"
 #include "engine/entity.hpp"
 #include "engine/storable.hpp"
+#include "engine/world.hpp"
 #include "engine/system.hpp"
 
 namespace Engine {
 	World::World()
 		: _entities(*this)
 	{}
+
+	World::~World() {}
 
 	World &World::registerSystem(std::unique_ptr<System> &sys)
 	{
@@ -27,7 +29,7 @@ namespace Engine {
 			}
 			sys->registerComponentStorage(storage_id, _components[storage_id]);
 		}
-		_systems.push_back(std::move(sys));
+		_dispatcher._systems.push_back(std::move(sys));
 		return *this;
 	}
 
@@ -63,7 +65,7 @@ namespace Engine {
 	{
 		while (!_states.empty()) {
 			_states.current().onUpdate();
-			for (auto &sys : _systems) {
+			for (auto &sys : _dispatcher._systems) {
 				sys->run();
 			}
 		}

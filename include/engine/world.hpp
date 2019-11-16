@@ -8,6 +8,7 @@
 #ifndef WORLD_HPP_FORTBZIN
 #define WORLD_HPP_FORTBZIN
 
+
 #include <unordered_map>
 #include <vector>
 #include <memory>
@@ -16,17 +17,18 @@
 #include "uuid.hpp"
 #include "storable.hpp"
 #include "state.hpp"
+#include "dispatcher.hpp"
 
 namespace Engine {
 
 	class Entity;
-	class System;
+	class Storable;
 
 	class World
 	{
 	public:
 		World();
-		~World() = default;
+		~World();
 
 		World &registerSystem(std::unique_ptr<System> &);
 		void registerRessource();
@@ -38,11 +40,10 @@ namespace Engine {
 		UUIDContext uuidCtx;
 
 	private:
-		//dispatcher
+		Dispatcher _dispatcher;
 		StateMachine _states;
 		EntityStorage _entities;
 		std::unordered_map<int64_t, std::vector<std::unique_ptr<Storable>>> _components;
-		std::vector<std::unique_ptr<System>> _systems;
 		//ressourceStorage
 	};
 }

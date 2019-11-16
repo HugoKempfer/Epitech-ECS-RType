@@ -35,8 +35,8 @@ add_executable(r-type_server ${SERVER})
 add_executable(r-type_client ${CLIENT})
 add_executable(engine_test ${TEST_ENGINE})
 
-target_link_libraries(engine_test criterion engine)
+target_link_libraries(engine_test engine criterion)
 target_link_libraries(r-type_server ${CONAN_LIBS} engine)
 target_link_libraries(r-type_client ${CONAN_LIBS} engine)
 
-add_test(world bin/engine_test "")
+add_test(world bin/engine_test)

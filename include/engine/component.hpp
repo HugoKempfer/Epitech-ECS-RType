@@ -25,7 +25,7 @@ namespace Engine
 	Component(World &world, int64_t entityId)
 		: _world(world), _entityId(entityId), Storable(world.uuidCtx, world.uuidCtx.get<Item>())
 	{}
-		virtual ~Component();
+		virtual ~Component() = default;
 
 	private:
 		World &_world;

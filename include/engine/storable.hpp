@@ -19,7 +19,7 @@ namespace Engine
 		Storable() = delete;
 		Storable(UUIDContext &context, int64_t uuid) :
 			_context(context), UUID(uuid) {}
-		virtual ~Storable();
+		virtual ~Storable() = default;
 
 		template <typename DEST> requires derived_from<DEST, Storable>
 		DEST cast()

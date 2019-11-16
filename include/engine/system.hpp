@@ -32,7 +32,7 @@ namespace Engine
 		System(World &, std::unordered_set<int64_t>,
 				std::unordered_set<int64_t>);
 
-		virtual ~System();
+		virtual ~System() = default;
 		void registerComponentStorage(int64_t, std::vector<std::unique_ptr<Storable>> &);
 
 		const std::unordered_set<int64_t> writeComponentAccess;
@@ -41,16 +41,16 @@ namespace Engine
 		virtual void run() = 0;
 
 	protected:
-		template <typename C> requires derived_from<C, Component<C>>
-		std::vector<std::unique_ptr<C>> &getComponents()
-		{
-			try {
-				auto uuid = _world.uuidCtx.get<C>();
-				return static_cast<std::vector<std::unique_ptr<C>>>(_component[uuid].get());
-			} catch(std::exception e) {
-				std::cerr << e.what() << std::endl;
-			}
+	template <typename C> requires derived_from<C, Component<C>>
+	std::vector<std::unique_ptr<C>> &getComponents()
+	{
+		try {
+			auto uuid = _world.uuidCtx.get<C>();
+			return static_cast<std::vector<std::unique_ptr<C>>>(_component[uuid].get());
+		} catch(std::exception e) {
+			std::cerr << e.what() << std::endl;
 		}
+	}
 
 		State _systemState = INIT;
 
@@ -58,6 +58,7 @@ namespace Engine
 		std::unordered_map<int64_t, std::reference_wrapper<std::vector<std::unique_ptr<Storable>>>> _component;
 		World &_world;
 	};
+
 } /* Engine */
 
 #endif /* end of include guard: SYSTEM_HPP_ZXPHWOR7 */
