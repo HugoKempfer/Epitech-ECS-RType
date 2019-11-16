@@ -11,6 +11,7 @@
 #include <iostream>
 #include <unordered_set>
 #include <mutex>
+#include <memory>
 #include "concepts_impl.hpp"
 #include "storable.hpp"
 
@@ -30,7 +31,7 @@ namespace Engine {
 		template <typename T, typename ... Args> requires derived_from<T, Component<T>>
 		Entity &addComponent(Args && ...args)
 		{
-			T instance = T(std::forward<Args>(args)...);
+			auto instance = std::make_unique<T>(std::forward<Args>(args)...);
 
 			this->processComponent(instance);
 			return *this;
@@ -39,7 +40,7 @@ namespace Engine {
 		const int64_t id;
 
 	private:
-		void processComponent(Storable &);
+		void processComponent(std::unique_ptr<Storable> &);
 
 		World &_world;
 		std::mutex _componentProcess;

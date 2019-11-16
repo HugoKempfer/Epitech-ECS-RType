@@ -25,11 +25,11 @@ namespace Engine
 	void StateMachine::pop()
 	{
 		if (!_states.empty()) {
-			_states.top().get().onStop();
+			_states.top()->onStop();
 		}
 		_states.pop();
 		if (!_states.empty()) {
-			_states.top().get().onResume();
+			_states.top()->onResume();
 		}
 	}
 

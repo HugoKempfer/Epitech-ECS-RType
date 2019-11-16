@@ -20,6 +20,7 @@
 namespace Engine {
 
 	class Entity;
+	class System;
 
 	class World
 	{
@@ -27,11 +28,11 @@ namespace Engine {
 		World();
 		~World() = default;
 
-		void registerSystem();
+		World &registerSystem(std::unique_ptr<System> &);
 		void registerRessource();
 		Entity &createEntity();
 		Entity &getEntity(int64_t);
-		void storeComponent(Storable &);
+		void storeComponent(std::unique_ptr<Storable> &);
 		void run();
 
 		UUIDContext uuidCtx;
@@ -40,7 +41,8 @@ namespace Engine {
 		//dispatcher
 		StateMachine _states;
 		EntityStorage _entities;
-		std::unordered_map<int64_t, std::vector<Storable>> _components;
+		std::unordered_map<int64_t, std::vector<std::unique_ptr<Storable>>> _components;
+		std::vector<std::unique_ptr<System>> _systems;
 		//ressourceStorage
 	};
 }

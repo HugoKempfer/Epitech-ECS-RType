@@ -16,7 +16,7 @@ namespace Engine
 			: _world(world), writeComponentAccess(componentAccess), executeOnState(affectToState)
 		{}
 
-	void System::registerComponentStorage(int64_t uuid, std::vector<Storable> &storable)
+	void System::registerComponentStorage(int64_t uuid, std::vector<std::unique_ptr<Storable>> &storable)
 	{
 		_component.insert({uuid, storable});
 	}

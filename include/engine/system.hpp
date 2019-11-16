@@ -14,11 +14,10 @@
 #include "storable.hpp"
 #include "component.hpp"
 #include "concepts_impl.hpp"
+#include "world.hpp"
 
 namespace Engine
 {
-	class World;
-
 	class System
 	{
 		enum State {
@@ -34,19 +33,20 @@ namespace Engine
 				std::unordered_set<int64_t>);
 
 		virtual ~System();
-		void registerComponentStorage(int64_t, std::vector<Storable> &);
+		void registerComponentStorage(int64_t, std::vector<std::unique_ptr<Storable>> &);
 
 		const std::unordered_set<int64_t> writeComponentAccess;
 		const std::unordered_set<int64_t> executeOnState;
 		const State getState() const { return _systemState; }
+		virtual void run() = 0;
 
 	protected:
 		template <typename C> requires derived_from<C, Component<C>>
-		std::vector<C> &getComponents()
+		std::vector<std::unique_ptr<C>> &getComponents()
 		{
 			try {
 				auto uuid = _world.uuidCtx.get<C>();
-				return static_cast<std::vector<C>>(_component[uuid].get());
+				return static_cast<std::vector<std::unique_ptr<C>>>(_component[uuid].get());
 			} catch(std::exception e) {
 				std::cerr << e.what() << std::endl;
 			}
@@ -55,7 +55,7 @@ namespace Engine
 		State _systemState = INIT;
 
 	private:
-		std::unordered_map<int64_t, std::reference_wrapper<std::vector<Storable>>> _component;
+		std::unordered_map<int64_t, std::reference_wrapper<std::vector<std::unique_ptr<Storable>>>> _component;
 		World &_world;
 	};
 } /* Engine */

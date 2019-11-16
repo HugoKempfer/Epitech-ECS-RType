@@ -10,6 +10,7 @@
 
 #include <iostream>
 #include <unordered_set>
+#include <memory>
 #include <stack>
 #include <vector>
 #include <functional>
@@ -60,28 +61,29 @@ namespace Engine
 		~StateMachine() = default;
 
 		template <typename T> requires derived_from<T, State<T>>
-		void push(T newState)
+		void push(std::unique_ptr<T> newState)
 		{
 			if (!_states.empty()) {
-				_states.top().get().onPause();
+				_states.top()->onPause();
 			}
-
-			_states.push(newState);
+			_states.push(std::move<newState>);
 		}
 
 		template <typename T> requires derived_from<T, State<T>>
 		void emplace(T newState)
 		{
 			if (!_states.empty()) {
-				_states.top().get().onStop();
+				_states.top()->onStop();
 			}
-			_states.emplace(newState);
+			_states.emplace(std::move<newState>);
 		}
 
+		bool empty() const { return _states.empty(); }
 		void pop();
+		IActionableState &current() { return *_states.top(); }
 
 	private:
-		std::stack<reference_wrapper<IActionableState>> _states;
+		std::stack<std::unique_ptr<IActionableState>> _states;
 	};
 
 } /* Engine */
