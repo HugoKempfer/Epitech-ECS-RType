@@ -14,11 +14,9 @@
 #include "engine/storable.hpp"
 
 namespace Engine {
-	World::World(int initialState)
+	World::World()
 		: _entities(*this)
-	{
-		/* TODO: push init state */
-	}
+	{}
 
 	void World::registerSystem()
 	{}
@@ -29,6 +27,11 @@ namespace Engine {
 	Entity &World::createEntity()
 	{
 		return _entities.add();
+	}
+
+	Entity &World::getEntity(int64_t id)
+	{
+		return _entities[id];
 	}
 
 	void World::run()

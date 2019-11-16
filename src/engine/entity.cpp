@@ -14,7 +14,7 @@
 namespace Engine
 {
 	Entity::Entity(const Entity &old)
-		: _id(old._id), _world(old._world), _boundComponentsType(old._boundComponentsType)
+		: id(old.id), _world(old._world), _boundComponentsType(old._boundComponentsType)
 	{}
 
 	void Entity::processComponent(Storable &component)

@@ -50,7 +50,7 @@ namespace Engine
 		}
 	}
 
-	const Entity &EntityStorage::operator[](std::size_t index) const
+	Entity &EntityStorage::operator[](std::size_t index)
 	{
 		return _entities.at(index);
 	}

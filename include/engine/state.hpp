@@ -14,7 +14,6 @@
 #include <vector>
 #include <functional>
 #include "storable.hpp"
-#include "world.hpp"
 
 using std::reference_wrapper;
 
@@ -42,8 +41,7 @@ namespace Engine
 	{
 	public:
 		State() = delete;
-		State(World &world) : Storable(world.uuidCtx, world.uuidCtx.get<Item>())
-		{}
+		State(World &world);
 
 		virtual ~State();
 

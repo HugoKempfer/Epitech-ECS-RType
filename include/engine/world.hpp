@@ -24,13 +24,13 @@ namespace Engine {
 	class World
 	{
 	public:
-		World() = delete;
+		World();
 		~World() = default;
-		World(int); //TODO replace with actual state class
 
 		void registerSystem();
 		void registerRessource();
 		Entity &createEntity();
+		Entity &getEntity(int64_t);
 		void storeComponent(Storable &);
 		void run();
 

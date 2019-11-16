@@ -23,7 +23,7 @@ namespace Engine {
 	{
 	public:
 		Entity() = delete;
-		Entity(int64_t id, World &world) : _id(id), _world(world) {}
+		Entity(int64_t id, World &world) : id(id), _world(world) {}
 		Entity(const Entity &);
 		~Entity() = default;
 
@@ -36,10 +36,11 @@ namespace Engine {
 			return *this;
 		}
 
+		const int64_t id;
+
 	private:
 		void processComponent(Storable &);
 
-		const int64_t _id;
 		World &_world;
 		std::mutex _componentProcess;
 		std::unordered_set<int64_t> _boundComponentsType;

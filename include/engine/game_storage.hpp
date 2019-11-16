@@ -29,7 +29,7 @@ namespace Engine {
 		void doRemove(int id);
 		void removeAll() { _removeAll = true; }
 
-		const Entity &operator[](std::size_t index) const;
+		Entity &operator[](std::size_t index);
 	private:
 		void processRemoval();
 

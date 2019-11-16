@@ -6,11 +6,22 @@
 */
 
 #include <stack>
-#include "engine/state.hpp"
+#include "engine/storable.hpp"
 #include "engine/world.hpp"
+#include "engine/state.hpp"
 
 namespace Engine
 {
+	template <typename Item>
+	State<Item>::State(World &world) : Storable(world.uuidCtx, world.uuidCtx.get<Item>())
+	{}
+
+	template <typename Item>
+	int64_t State<Item>::getUUID() const
+	{
+		return UUID;
+	}
+
 	void StateMachine::pop()
 	{
 		if (!_states.empty()) {
