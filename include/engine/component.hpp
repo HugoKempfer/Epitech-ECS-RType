@@ -22,14 +22,21 @@ namespace Engine
 	public:
 		Component() = delete;
 
-	Component(World &world, int64_t entityId)
-		: _world(world), _entityId(entityId), Storable(world.uuidCtx, world.uuidCtx.get<Item>())
+	Component(World &world)
+		: _world(world), Storable(world.uuidCtx, world.uuidCtx.get<Item>())
 	{}
 		virtual ~Component() = default;
+		void initEntityId(int64_t id)
+		{
+			if (_entityId == -1) {
+				_entityId = id;
+			}
+		}
+		int64_t getEntityId() const noexcept { return _entityId; }
 
 	private:
 		World &_world;
-		const int64_t _entityId;
+		int64_t _entityId = -1;
 	};
 } /* Engine */
 

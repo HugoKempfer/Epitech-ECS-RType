@@ -31,12 +31,15 @@ namespace Engine {
 		template <typename T, typename ... Args> requires derived_from<T, Component<T>>
 		Entity &addComponent(Args && ...args)
 		{
-			auto instance = std::make_unique<T>(std::forward<Args>(args)...);
+			std::unique_ptr<Component<T>> instance = std::make_unique<T>(std::forward<Args>(args)...);
 
-			this->processComponent(instance);
+			instance->initEntityId(id);
+			std::unique_ptr<Storable> store = std::move(instance);
+			this->processComponent(store);
 			return *this;
 		}
 
+		const std::unordered_set<int64_t> &boundComponents() const noexcept { return _boundComponentsType; }
 		const int64_t id;
 
 	private:
