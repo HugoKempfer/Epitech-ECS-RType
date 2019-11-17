@@ -15,13 +15,12 @@
 #include <vector>
 #include <functional>
 #include "storable.hpp"
+#include "world.hpp"
 
 using std::reference_wrapper;
 
 namespace Engine
 {
-	class World;
-
 	class IActionableState
 	{
 	public:
@@ -42,48 +41,23 @@ namespace Engine
 	{
 	public:
 		State() = delete;
-		State(World &world);
+		State(World &world) : _world(world), Storable(world.uuidCtx, world.uuidCtx.get<Item>())
+		{}
 
-		virtual ~State();
+		virtual ~State() = default;
 
-		int64_t getUUID() const final;
+		int64_t getUUID() const final { return UUID; }
 		const std::unordered_set<int64_t> &getRessourceAccessList() const final
 		{return _ressourceAccess;}
 
+		void onStart() override {}
+		void onPause() override {}
+		void onResume() override {}
+		void onStop() override {}
+		void onUpdate() override {}
 	protected:
 		std::unordered_set<int64_t> _ressourceAccess;
-	};
-
-	class StateMachine
-	{
-	public:
-		StateMachine() = default;
-		~StateMachine() = default;
-
-		template <typename T> requires derived_from<T, State<T>>
-		void push(std::unique_ptr<T> newState)
-		{
-			if (!_states.empty()) {
-				_states.top()->onPause();
-			}
-			_states.push(std::move<newState>);
-		}
-
-		template <typename T> requires derived_from<T, State<T>>
-		void emplace(T newState)
-		{
-			if (!_states.empty()) {
-				_states.top()->onStop();
-			}
-			_states.emplace(std::move<newState>);
-		}
-
-		bool empty() const { return _states.empty(); }
-		void pop();
-		IActionableState &current() { return *_states.top(); }
-
-	private:
-		std::stack<std::unique_ptr<IActionableState>> _states;
+		World &_world;
 	};
 
 } /* Engine */

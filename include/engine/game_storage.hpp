@@ -28,6 +28,7 @@ namespace Engine {
 		Entity &add();
 		void doRemove(int id);
 		void removeAll() { _removeAll = true; }
+		size_t size() const { return _entities.size(); }
 
 		Entity &operator[](std::size_t index);
 	private:

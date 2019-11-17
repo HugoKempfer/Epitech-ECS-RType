@@ -13,10 +13,11 @@
 #include "engine/storable.hpp"
 #include "engine/world.hpp"
 #include "engine/system.hpp"
+#include "engine/state.hpp"
 
 namespace Engine {
 	World::World()
-		: _entities(*this)
+		: entities(*this)
 	{}
 
 	World::~World() {}
@@ -38,16 +39,6 @@ namespace Engine {
 		std::cerr << "Unimplemented" << std::endl;
 	}
 
-	Entity &World::createEntity()
-	{
-		return _entities.add();
-	}
-
-	Entity &World::getEntity(int64_t id)
-	{
-		return _entities[id];
-	}
-
 	void World::storeComponent(std::unique_ptr<Storable> &component)
 	{
 		if (!_components.contains(component->UUID)) {
@@ -63,11 +54,14 @@ namespace Engine {
 
 	void World::run()
 	{
-		while (!_states.empty()) {
-			_states.current().onUpdate();
+		while (!states.empty()) {
+			states.current().onUpdate();
 			for (auto &sys : _dispatcher._systems) {
 				sys->run();
 			}
+			this->entities.processRemoval();
 		}
+		this->entities.removeAll();
+		this->entities.processRemoval();
 	}
 }
