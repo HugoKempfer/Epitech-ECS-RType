@@ -55,6 +55,7 @@ namespace Engine
 		void onResume() override {}
 		void onStop() override {}
 		void onUpdate() override {}
+
 	protected:
 		std::unordered_set<int64_t> _ressourceAccess;
 		World &_world;

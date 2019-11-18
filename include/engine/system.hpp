@@ -41,22 +41,22 @@ namespace Engine
 		virtual void run() = 0;
 
 	protected:
-	template <typename C> requires derived_from<C, Component<C>>
-	std::vector<std::unique_ptr<C>> &getComponents()
-	{
-		try {
-			auto uuid = _world.uuidCtx.get<C>();
-			return static_cast<std::vector<std::unique_ptr<C>>>(_component[uuid].get());
-		} catch(std::exception e) {
-			std::cerr << e.what() << std::endl;
+		template <typename C> requires derived_from<C, Component<C>>
+		std::vector<std::unique_ptr<C>> &getComponents()
+		{
+			try {
+				auto uuid = _world.uuidCtx.get<C>();
+				return static_cast<std::vector<std::unique_ptr<C>>>(_component[uuid].get());
+			} catch(std::exception e) {
+				std::cerr << e.what() << std::endl;
+			}
 		}
-	}
 
+		World &_world;
 		State _systemState = INIT;
 
 	private:
 		std::unordered_map<int64_t, std::reference_wrapper<std::vector<std::unique_ptr<Storable>>>> _component;
-		World &_world;
 	};
 
 } /* Engine */

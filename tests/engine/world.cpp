@@ -12,6 +12,7 @@ public:
 	TestState(World &world, int &count) : State<TestState>(world), _damn(count)
 {}
 	~TestState() = default;
+
 	void onStart() override {
 		++_damn;
 	}

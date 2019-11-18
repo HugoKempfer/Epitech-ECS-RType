@@ -5,6 +5,7 @@
 ** Engine base container
 */
 
+#include <criterion/logging.h> //TODO remove this
 #include <unordered_map>
 #include <vector>
 #include "engine/game_storage.hpp"
@@ -22,13 +23,13 @@ namespace Engine {
 
 	World::~World() {}
 
-	World &World::registerSystem(std::unique_ptr<System> &sys)
+	World &World::registerSystem(std::unique_ptr<System> sys)
 	{
-		for (auto storage_id : sys->writeComponentAccess) {
+		for (auto &storage_id : sys->writeComponentAccess) {
 			if (!_components.contains(storage_id)) {
 				_components.insert({storage_id, std::vector<std::unique_ptr<Storable>>()});
 			}
-			sys->registerComponentStorage(storage_id, _components[storage_id]);
+			sys->registerComponentStorage(storage_id, _components.at(storage_id));
 		}
 		_dispatcher._systems.push_back(std::move(sys));
 		return *this;

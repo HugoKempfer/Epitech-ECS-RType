@@ -29,7 +29,7 @@ namespace Engine {
 		World();
 		~World();
 
-		World &registerSystem(std::unique_ptr<System> &);
+		World &registerSystem(std::unique_ptr<System>);
 		void registerRessource();
 		void storeComponent(std::unique_ptr<Storable> &);
 		void run();
