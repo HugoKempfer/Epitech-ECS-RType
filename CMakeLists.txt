@@ -4,6 +4,9 @@ enable_testing()
 
 cmake_minimum_required(VERSION 3.1.0)
 set(CMAKE_CXX_STANDARD 20)
+IF(APPLE)
+	set(CMAKE_CXX_COMPILER "/usr/local/Cellar/gcc/9.2.0_1/bin/g++-9")
+ENDIF(APPLE)
 add_definitions("-fPIC")
 add_definitions("-fconcepts")
 
