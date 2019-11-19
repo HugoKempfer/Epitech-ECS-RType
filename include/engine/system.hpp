@@ -42,14 +42,20 @@ namespace Engine
 
 	protected:
 		template <typename C> requires derived_from<C, Component<C>>
-		std::vector<std::unique_ptr<C>> &getComponents()
+		std::vector<std::reference_wrapper<C>> getComponents()
 		{
+			auto components = std::vector<std::reference_wrapper<C>>();
+
 			try {
 				auto uuid = _world.uuidCtx.get<C>();
-				return static_cast<std::vector<std::unique_ptr<C>>>(_component[uuid].get());
+				std::vector<std::unique_ptr<Storable>> &ref = _component.at(uuid).get();
+				for (auto &component : ref) {
+					components.push_back({static_cast<C &>(*component)});
+				}
 			} catch(std::exception e) {
-				std::cerr << e.what() << std::endl;
+				throw e;
 			}
+			return components;
 		}
 
 		World &_world;

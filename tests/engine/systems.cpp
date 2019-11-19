@@ -11,28 +11,57 @@ using namespace Engine;
 
 namespace SystemNs
 {
-class TestState : public State<TestState> {
-public:
-	TestState(World &world): State<TestState>(world) {}
-};
+	class TestState : public State<TestState> {
+	public:
+		TestState(World &world): State<TestState>(world) {}
+	};
 
-class TestSystem : public System {
-public:
-	TestSystem(World &world, int &count) :
-		System(world, {}, {world.uuidCtx.get<TestState>()}),
-		_count(count)
-	{}
-	~TestSystem() = default;
+	class TestComponent : public Component<TestComponent>
+	{
+	public:
+		TestComponent(World &world, std::string &str):
+			Component<TestComponent>(world), msg(str) {}
 
-	void run() final {
-		++_count;
-		if (_count == 3) {
+		const std::string &msg;
+	};
+
+	class TestSystem : public System {
+	public:
+		TestSystem(World &world, int &count) :
+			System(world,
+					{},
+					{world.uuidCtx.get<TestState>()}),
+			_count(count)
+		{}
+		~TestSystem() = default;
+
+		void run() final {
+			++_count;
+			if (_count == 3) {
+				_world.states.pop();
+			}
+		}
+	private:
+		int &_count;
+	};
+
+	class TestSystem2 : public System {
+	public:
+		TestSystem2(World &world) :
+			System(world,
+					{world.uuidCtx.get<TestComponent>()},
+					{world.uuidCtx.get<TestState>()})
+		{}
+
+		~TestSystem2() = default;
+
+		void run() final {
+			auto components = this->getComponents<TestComponent>();
+
+			cr_assert_eq(components[0].get().msg, std::string("damn daniel"));
 			_world.states.pop();
 		}
-	}
-private:
-	int &_count;
-};
+	};
 } /* TestSystem */
 
 Test(System, registerSystem)
@@ -52,4 +81,18 @@ Test(System, runSystem)
 	world.states.push(std::make_unique<SystemNs::TestState>(world));
 	world.run();
 	cr_assert_eq(count, 3);
+}
+
+Test(System, getComponent)
+{
+	using namespace SystemNs;
+	int count;
+	std::string damn("damn daniel");
+
+	World world;
+
+	world.states.push(std::make_unique<TestState>(world));
+	world.entities.add().addComponent<TestComponent>(world, damn);
+	world.registerSystem(std::make_unique<TestSystem2>(world));
+	world.run();
 }
