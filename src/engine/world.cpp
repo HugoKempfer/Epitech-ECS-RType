@@ -30,12 +30,14 @@ namespace Engine {
 			}
 			sys->registerComponentStorage(storage_id, _components.at(storage_id));
 		}
+		for (auto &storage_id : sys->writeRessourceAccess) {
+			if (!_ressources.contains(storage_id)) {
+				/* TODO: Use specialized error */
+				throw std::runtime_error("Ressource not yet registered");
+			}
+			sys->registerRessourceStorage(storage_id, *_ressources.at(storage_id));
+		}
 		_dispatcher._systems.push_back(std::move(sys));
-	}
-
-	void World::registerRessource()
-	{
-		std::cerr << "Unimplemented" << std::endl;
 	}
 
 	void World::storeComponent(std::unique_ptr<Storable> &component)

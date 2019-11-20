@@ -23,6 +23,9 @@ namespace Engine {
 	class Entity;
 	class Storable;
 
+	template <typename T>
+	class Ressource;
+
 	class World
 	{
 	public:
@@ -38,13 +41,22 @@ namespace Engine {
 			return *this;
 		}
 
-		void registerRessource();
+		template <typename T, typename ... Args> requires derived_from<T, Ressource<T>>
+		World &registerRessource(Args && ...args)
+		{
+			auto res = std::make_unique<T>(std::forward<Args>(args)...);
+
+			_ressources.insert({res->UUID, std::move(res)});
+			return *this;
+		}
 
 		//Don't directly call this method => Deprecated
 		void storeComponent(std::unique_ptr<Storable> &);
 
 		//Don't directly call this method => Deprecated
 		void removeComponent(std::unique_ptr<Storable> &);
+
+		//Launch the event loop
 		void run();
 
 		UUIDContext uuidCtx;
@@ -57,7 +69,7 @@ namespace Engine {
 
 		Dispatcher _dispatcher;
 		std::unordered_map<int64_t, std::vector<std::unique_ptr<Storable>>> _components;
-		//ressourceStorage
+		std::unordered_map<int64_t, std::unique_ptr<Storable>> _ressources;
 	};
 }
 

@@ -29,13 +29,16 @@ namespace Engine
 
 	public:
 		System() = delete;
-		System(World &, std::unordered_set<int64_t>,
-				std::unordered_set<int64_t>);
+		System(World &, std::unordered_set<int64_t> components,
+				std::unordered_set<int64_t> ressources,
+				std::unordered_set<int64_t> execOnState);
 
 		virtual ~System() = default;
 		void registerComponentStorage(int64_t, std::vector<std::unique_ptr<Storable>> &);
+		void registerRessourceStorage(int64_t, Storable &);
 
 		const std::unordered_set<int64_t> writeComponentAccess;
+		const std::unordered_set<int64_t> writeRessourceAccess;
 		const std::unordered_set<int64_t> executeOnState;
 		const State getState() const { return _systemState; }
 		virtual void run() = 0;
@@ -58,11 +61,23 @@ namespace Engine
 			return components;
 		}
 
+		template <typename R> requires derived_from<R, Ressource<R>>
+		R &getRessource()
+		{
+			try {
+				auto uuid = _world.uuidCtx.get<R>();
+				return static_cast<R &>(_ressources.at(uuid).get());
+			} catch(std::exception e) {
+				throw e;
+			}
+		}
+
 		World &_world;
 		State _systemState = INIT;
 
 	private:
 		std::unordered_map<int64_t, std::reference_wrapper<std::vector<std::unique_ptr<Storable>>>> _component;
+		std::unordered_map<int64_t, std::reference_wrapper<Storable>> _ressources;
 	};
 
 } /* Engine */
