@@ -6,6 +6,7 @@
 #include "engine/entity.hpp"
 #include "engine/system.hpp"
 #include "engine/state.hpp"
+#include "engine/ressource.hpp"
 
 using namespace Engine;
 
@@ -30,6 +31,7 @@ namespace SystemNs
 		TestSystem(World &world, int &count) :
 			System(world,
 					{},
+					{},
 					{world.uuidCtx.get<TestState>()}),
 			_count(count)
 		{}
@@ -50,6 +52,7 @@ namespace SystemNs
 		TestSystem2(World &world) :
 			System(world,
 					{world.uuidCtx.get<TestComponent>()},
+					{},
 					{world.uuidCtx.get<TestState>()})
 		{}
 
@@ -96,3 +99,4 @@ Test(System, getComponent)
 	world.registerSystem<TestSystem2>(world);
 	world.run();
 }
+
