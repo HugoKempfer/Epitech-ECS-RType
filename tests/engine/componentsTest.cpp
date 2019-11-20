@@ -24,3 +24,14 @@ Test(Component, create)
 	auto &entity = world.entities[0];
 	cr_assert(entity.boundComponents().contains(world.uuidCtx.get<TestComponent>()));
 }
+
+Test(Component, destroy)
+{
+	World world;
+
+	world.entities.add().addComponent<TestComponent>(world, "damn");
+	auto &entity = world.entities[0];
+	cr_assert(entity.boundComponents().contains(world.uuidCtx.get<TestComponent>()));
+	entity.removeComponent<TestComponent>();
+	cr_assert_not(entity.boundComponents().contains(world.uuidCtx.get<TestComponent>()));
+}
