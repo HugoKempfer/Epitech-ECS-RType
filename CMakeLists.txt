@@ -17,6 +17,10 @@ file(GLOB_RECURSE ENGINE
 		"src/engine/*.cpp",
 		)
 
+file(GLOB_RECURSE ENGINE_RENDER #TODO move this inside engine dir
+		"src/render/*.cpp",
+		)
+
 file(GLOB_RECURSE SERVER
 		"src/server/*.cpp",
 		)
@@ -30,13 +34,16 @@ file(GLOB_RECURSE TEST_ENGINE
 		)
 
 add_library(engine STATIC ${ENGINE})
+add_library(engine_render STATIC ${ENGINE_RENDER})
 
 add_executable(r-type_server ${SERVER})
 add_executable(r-type_client ${CLIENT})
 add_executable(engine_test ${TEST_ENGINE})
 
-target_link_libraries(engine_test engine criterion)
+target_link_libraries(engine_render engine)
 target_link_libraries(r-type_server ${CONAN_LIBS} engine)
-target_link_libraries(r-type_client ${CONAN_LIBS} engine)
+target_link_libraries(r-type_client ${CONAN_LIBS} engine engine_render)
+
+target_link_libraries(engine_test engine criterion)
 
 add_test(world bin/engine_test)
