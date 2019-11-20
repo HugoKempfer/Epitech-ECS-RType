@@ -5,7 +5,6 @@
 ** Engine base container
 */
 
-#include <criterion/logging.h> //TODO remove this
 #include <unordered_map>
 #include <vector>
 #include "engine/game_storage.hpp"
@@ -50,6 +49,17 @@ namespace Engine {
 			storage.push_back(std::move(component));
 		} catch(std::out_of_range e) {
 			std::cerr << e.what() << std::endl;
+		}
+	}
+
+	void World::removeComponent(std::unique_ptr<Storable> &component)
+	{
+		try {
+			auto &storage = _components.at(component->UUID);
+			auto it = std::find(storage.begin(), storage.end(), component);
+			storage.erase(it);
+		} catch(std::out_of_range e) {
+			/* TODO: handle exception */
 		}
 	}
 

@@ -25,20 +25,8 @@ namespace Engine
 		~StateMachine() = default;
 
 		void push(std::unique_ptr<IActionableState> newState);
-		/* { */
-		/* 	if (!_states.empty()) { */
-		/* 		_states.top()->onPause(); */
-		/* 	} */
-		/* 	_states.push(std::move(newState)); */
-		/* } */
 
 		void emplace(std::unique_ptr<IActionableState> newState);
-		/* { */
-		/* 	if (!_states.empty()) { */
-		/* 		_states.top()->onStop(); */
-		/* 	} */
-		/* 	_states.emplace(std::move(newState)); */
-		/* } */
 
 		bool empty() const;
 		void pop();
