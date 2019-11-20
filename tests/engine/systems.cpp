@@ -78,7 +78,7 @@ Test(System, runSystem)
 	int count = 0;
 
 	world.registerSystem<SystemNs::TestSystem>(world, count);
-	world.states.push(std::make_unique<SystemNs::TestState>(world));
+	world.states.push<SystemNs::TestState>(world);
 	world.run();
 	cr_assert_eq(count, 3);
 }
@@ -91,7 +91,7 @@ Test(System, getComponent)
 
 	World world;
 
-	world.states.push(std::make_unique<TestState>(world));
+	world.states.push<TestState>(world);
 	world.entities.add().addComponent<TestComponent>(world, damn);
 	world.registerSystem<TestSystem2>(world);
 	world.run();

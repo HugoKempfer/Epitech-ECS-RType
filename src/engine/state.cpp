@@ -30,7 +30,7 @@ namespace Engine
 		}
 	}
 
-	void StateMachine::push(std::unique_ptr<IActionableState> newState)
+	void StateMachine::processPush(std::unique_ptr<IActionableState> &newState)
 	{
 		if (!_states.empty()) {
 			_states.top()->onPause();
@@ -39,7 +39,7 @@ namespace Engine
 		_states.top()->onStart();
 	}
 
-	void StateMachine::emplace(std::unique_ptr<IActionableState> newState)
+	void StateMachine::processEmplace(std::unique_ptr<IActionableState> &newState)
 	{
 		if (!_states.empty()) {
 			_states.top()->onStop();
