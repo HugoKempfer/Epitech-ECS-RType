@@ -39,7 +39,7 @@ Test(World, registerState)
 	World world;
 	int count = 0;
 
-	world.states.push(std::make_unique<TestState>(world, count));
+	world.states.push<TestState>(world, count);
 	world.run();
 	cr_assert_eq(count, 2);
 }
@@ -81,7 +81,7 @@ Test(World, deleteEntity)
 	};
 
 	Engine::World world;
-	world.states.push(std::make_unique<TestState2>(world));
+	world.states.push<TestState2>(world);
 	world.run();
 	cr_assert_eq(world.entities.size(), 0);
 }

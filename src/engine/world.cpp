@@ -5,7 +5,6 @@
 ** Engine base container
 */
 
-#include <criterion/logging.h> //TODO remove this
 #include <unordered_map>
 #include <vector>
 #include "engine/game_storage.hpp"
@@ -23,7 +22,7 @@ namespace Engine {
 
 	World::~World() {}
 
-	World &World::registerSystem(std::unique_ptr<System> sys)
+	void World::processSystemRegistration(std::unique_ptr<System> &sys)
 	{
 		for (auto &storage_id : sys->writeComponentAccess) {
 			if (!_components.contains(storage_id)) {
@@ -32,7 +31,6 @@ namespace Engine {
 			sys->registerComponentStorage(storage_id, _components.at(storage_id));
 		}
 		_dispatcher._systems.push_back(std::move(sys));
-		return *this;
 	}
 
 	void World::registerRessource()
@@ -50,6 +48,17 @@ namespace Engine {
 			storage.push_back(std::move(component));
 		} catch(std::out_of_range e) {
 			std::cerr << e.what() << std::endl;
+		}
+	}
+
+	void World::removeComponent(std::unique_ptr<Storable> &component)
+	{
+		try {
+			auto &storage = _components.at(component->UUID);
+			auto it = std::find(storage.begin(), storage.end(), component);
+			storage.erase(it);
+		} catch(std::out_of_range e) {
+			/* TODO: handle exception */
 		}
 	}
 

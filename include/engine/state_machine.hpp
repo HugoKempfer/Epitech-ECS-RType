@@ -24,27 +24,32 @@ namespace Engine
 		StateMachine() = default;
 		~StateMachine() = default;
 
-		void push(std::unique_ptr<IActionableState> newState);
-		/* { */
-		/* 	if (!_states.empty()) { */
-		/* 		_states.top()->onPause(); */
-		/* 	} */
-		/* 	_states.push(std::move(newState)); */
-		/* } */
+		template <typename T, typename ... Args> requires derived_from<T, State<T>>
+		void push(Args && ...args)
+		{
+			std::unique_ptr<IActionableState> state =
+				std::make_unique<T>(std::forward<Args>(args)...);
 
-		void emplace(std::unique_ptr<IActionableState> newState);
-		/* { */
-		/* 	if (!_states.empty()) { */
-		/* 		_states.top()->onStop(); */
-		/* 	} */
-		/* 	_states.emplace(std::move(newState)); */
-		/* } */
+			this->processPush(state);
+		}
+
+		template <typename T, typename ... Args> requires derived_from<T, State<T>>
+		void emplace(Args && ...args)
+		{
+			std::unique_ptr<IActionableState> state =
+				std::make_unique<T>(std::forward<Args>(args)...);
+
+			this->processEmplace(state);
+		}
 
 		bool empty() const;
 		void pop();
 		IActionableState &current();
 
 	private:
+		void processPush(std::unique_ptr<IActionableState> &);
+		void processEmplace(std::unique_ptr<IActionableState> &);
+
 		std::stack<std::unique_ptr<IActionableState>> _states;
 	};
 
