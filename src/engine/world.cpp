@@ -22,7 +22,7 @@ namespace Engine {
 
 	World::~World() {}
 
-	World &World::registerSystem(std::unique_ptr<System> sys)
+	void World::processSystemRegistration(std::unique_ptr<System> &sys)
 	{
 		for (auto &storage_id : sys->writeComponentAccess) {
 			if (!_components.contains(storage_id)) {
@@ -31,7 +31,6 @@ namespace Engine {
 			sys->registerComponentStorage(storage_id, _components.at(storage_id));
 		}
 		_dispatcher._systems.push_back(std::move(sys));
-		return *this;
 	}
 
 	void World::registerRessource()
