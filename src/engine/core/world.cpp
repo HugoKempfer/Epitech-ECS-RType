@@ -69,8 +69,11 @@ namespace Engine {
 		while (!states.empty()) {
 			states.current().onUpdate();
 			for (auto &sys : _dispatcher._systems) {
-				sys->run();
+				if (sys->executeOnState.contains(states.current().getUUID())) {
+					sys->run();
+				}
 			}
+			this->eventsCtx.dispatchEvents();
 			this->entities.processRemoval();
 		}
 		this->entities.removeAll();
