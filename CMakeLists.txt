@@ -21,11 +21,11 @@ include_directories(${CMAKE_INCLUDE_PATH})
 include_directories("./include/")
 
 file(GLOB_RECURSE ENGINE
-		"src/engine/*.cpp",
+		"src/engine/core/*.cpp",
 		)
 
 file(GLOB_RECURSE ENGINE_RENDER #TODO move this inside engine dir
-		"src/render/*.cpp",
+		"src/engine/render/*.cpp",
 		)
 
 file(GLOB_RECURSE SERVER
