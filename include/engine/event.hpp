@@ -16,11 +16,11 @@
 #include "storable.hpp"
 #include "concepts_impl.hpp"
 #include "uuid.hpp"
+#include "event_context.hpp"
+#include "world.hpp"
 
 namespace Engine
 {
-	class World;
-
 	class ISubscribe
 	{
 	public:
@@ -43,7 +43,7 @@ namespace Engine
 		EventHandler() = delete;
 		EventHandler(World &world)
 		{
-			/* TODO: register event */
+			world.eventsCtx.subscribe<E>(*this);
 		}
 		~EventHandler() = default;
 
@@ -52,7 +52,7 @@ namespace Engine
 	private:
 		void handleSubscribtion(Storable const &event) const final
 		{
-			this->handle(static_cast<E &>(event));
+			this->handle(static_cast<E const &>(event));
 		}
 	};
 

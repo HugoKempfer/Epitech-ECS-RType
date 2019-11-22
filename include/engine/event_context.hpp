@@ -15,12 +15,15 @@
 #include <unordered_map>
 #include "storable.hpp"
 #include "concepts_impl.hpp"
-#include "event.hpp"
 #include "uuid.hpp"
 
 namespace Engine
 {
+	template <typename T>
+	class Event;
+
 	class World;
+	class ISubscribe;
 
 	class EventCtx
 	{
@@ -30,7 +33,7 @@ namespace Engine
 		~EventCtx() = default;
 
 		template <typename E> requires derived_from<E, Event<E>>
-		void subscribe(ISubscribe const &subscriber)
+		void subscribe(ISubscribe &subscriber)
 		{
 			const auto uuid = _uuid.get<E>();
 
