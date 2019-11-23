@@ -44,6 +44,21 @@ namespace Engine
 			_listeners.at(uuid).push_back(subscriber);
 		}
 
+		template <typename E> requires derived_from<E, Event<E>>
+		void unSubscribe(ISubscribe &subscriber)
+		{
+			const auto uuid = _uuid.get<E>();
+
+			if (_listeners.contains(uuid)) {
+				auto &storage = _listeners.at(uuid);
+				auto subscriberIt = std::find_if(storage.begin(), storage.end(),
+						[&](std::reference_wrapper<ISubscribe> &val){
+							return &val.get() == &subscriber;
+						});
+				storage.erase(subscriberIt);
+			}
+		}
+
 		template <typename E, typename ... Args> requires derived_from<E, Event<E>>
 		void publish(Args && ...args)
 		{

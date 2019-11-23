@@ -41,11 +41,14 @@ namespace Engine
 	class EventHandler : ISubscribe {
 	public:
 		EventHandler() = delete;
-		EventHandler(World &world)
+		EventHandler(World &world) : _eventWorld(world)
 		{
 			world.eventsCtx.subscribe<E>(*this);
 		}
-		~EventHandler() = default;
+		~EventHandler()
+		{
+			_eventWorld.eventsCtx.unSubscribe<E>(*this);
+		}
 
 		virtual void handle(E const &) const = 0;
 
@@ -54,6 +57,8 @@ namespace Engine
 		{
 			this->handle(static_cast<E const &>(event));
 		}
+
+		World &_eventWorld;
 	};
 
 } /* Engine */
