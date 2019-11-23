@@ -17,6 +17,7 @@
 #include "storable.hpp"
 #include "state_machine.hpp"
 #include "dispatcher.hpp"
+#include "event_context.hpp"
 
 namespace Engine {
 
@@ -60,6 +61,7 @@ namespace Engine {
 		void run();
 
 		UUIDContext uuidCtx;
+		EventCtx eventsCtx;
 
 		EntityStorage entities;
 		StateMachine states;
