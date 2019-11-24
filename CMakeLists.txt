@@ -9,6 +9,10 @@ if (APPLE)
 	set(CMAKE_CXX_COMPILER "/usr/local/Cellar/gcc/9.2.0_1/bin/g++-9")
 endif()
 
+if (DEFINED ENV{RTYPE_DEBUG})
+		set(CMAKE_BUILD_TYPE Debug)
+endif()
+
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
 add_definitions("-fPIC")

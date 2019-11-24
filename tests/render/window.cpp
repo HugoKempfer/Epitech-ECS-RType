@@ -6,6 +6,7 @@
 #include "engine/component.hpp"
 #include "engine/entity.hpp"
 #include "render/window.hpp"
+#include "render/ressources.hpp"
 
 using namespace Engine;
 
@@ -36,6 +37,7 @@ Test(Render, openWindow)
 
 	World world;
 	world.states.push<DamnState>(world);
+	world.registerRessource<WindowRessource>(world);
 	world.registerSystem<WindowSystem>(world, 300, 300);
 	world.run();
 }

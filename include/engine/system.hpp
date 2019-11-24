@@ -47,6 +47,9 @@ namespace Engine
 		const State getState() const { return _systemState; }
 		virtual void run() = 0;
 
+		//Use this for all non-local data initialization
+		virtual void onStart() {}
+
 	protected:
 		template <typename C> requires derived_from<C, Component<C>>
 		std::vector<std::reference_wrapper<C>> getComponents()
@@ -72,6 +75,7 @@ namespace Engine
 				auto uuid = _world.uuidCtx.get<R>();
 				return static_cast<R &>(_ressources.at(uuid).get());
 			} catch(std::exception e) {
+				/* TODO: Custom engine, access denied exception */
 				throw e;
 			}
 		}

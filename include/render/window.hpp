@@ -13,6 +13,7 @@
 #include "engine/system.hpp"
 #include "engine/world.hpp"
 #include "engine/event.hpp"
+#include "render/ressources.hpp"
 
 namespace Engine::Render
 {
@@ -20,22 +21,35 @@ namespace Engine::Render
 	class WindowSystem : public System
 	{
 	public:
+		WindowSystem() = delete;
 		WindowSystem (World &world, uint32_t height = 800, uint32_t width = 800) :
 			System(world,
 					{},
-					{}),
-			_window(sf::VideoMode(width, height), "wow")
+					{world.uuidCtx.get<WindowRessource>()}),
+			_height(height),
+			_width(width)
 		{}
+
+		void onStart() override
+		{
+			auto &wRessource = this->getRessource<WindowRessource>();
+
+			wRessource.window.create(sf::VideoMode(_width, _height), "damn");
+		}
+
 		~WindowSystem()
 		{
-			_window.close();
+			auto &wRessource = this->getRessource<WindowRessource>();
+
+			wRessource.window.close();
 		}
 
 		void run() override;
 
 	private:
 		void handleEvent(sf::Event &event);
-		sf::Window  _window;
+		const int _height;
+		const int _width;
 	};
 
 } /* Engine::Render */

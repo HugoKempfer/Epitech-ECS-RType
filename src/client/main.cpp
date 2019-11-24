@@ -52,7 +52,11 @@ int main(int argc, char *argv[])
 	World world;
 
 	world.states.push<InitState>(world);
+	world.registerRessource<WindowRessource>(world);
+	std::cerr << "between" << std::endl;
 	world.registerSystem<WindowSystem>(world, 200, 30);
+	std::cerr << "after" << std::endl;
 	world.run();
+	std::cerr << "after run" << std::endl;
 	return 0;
 }

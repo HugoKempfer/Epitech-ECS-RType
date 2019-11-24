@@ -1,0 +1,28 @@
+/*
+** EPITECH PROJECT, 2019
+** ressources
+** File description:
+** Built-in engine ressources
+*/
+
+#ifndef RESSOURCES_HPP_KBW0ATIM
+#define RESSOURCES_HPP_KBW0ATIM
+
+#include <SFML/Window.hpp>
+#include "engine/ressource.hpp"
+#include "engine/world.hpp"
+
+namespace Engine::Render
+{
+	class WindowRessource : public Ressource<WindowRessource>
+	{
+	public:
+		WindowRessource() = delete;
+		WindowRessource(World &world) : Ressource<WindowRessource>(world) {}
+		~WindowRessource() = default;
+
+		sf::Window window;
+	};
+} /* Engine::Render */
+
+#endif /* end of include guard: RESSOURCES_HPP_KBW0ATIM */

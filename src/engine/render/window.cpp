@@ -43,9 +43,10 @@ namespace Engine::Render
 
 	void WindowSystem::run()
 	{
+		auto &window = this->getRessource<WindowRessource>().window;
 		sf::Event event;
 
-		while (_window.pollEvent(event)) {
+		while (window.pollEvent(event)) {
 			this->handleEvent(event);
 			/* TODO: extract windows event and broadcast on channels */
 		}
