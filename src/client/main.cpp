@@ -6,13 +6,19 @@
 */
 
 #include <iostream>
+#include <SFML/Window.hpp>
+#include <memory>
+#include "engine/world.hpp"
+#include "engine/state.hpp"
+#include "engine/component.hpp"
+#include "engine/entity.hpp"
+#include "render/window.hpp"
 
 void test_engine();
 void damn();
 
 int main(int argc, char *argv[])
 {
-	std::cout << "Damn client" << std::endl;
 	test_engine();
 	damn();
 	return 0;

@@ -33,10 +33,14 @@ namespace Engine
 				std::unordered_set<int64_t> ressources,
 				std::unordered_set<int64_t> execOnState);
 
+		System(World &, std::unordered_set<int64_t> components,
+				std::unordered_set<int64_t> ressources);
+
 		virtual ~System() = default;
 		void registerComponentStorage(int64_t, std::vector<std::unique_ptr<Storable>> &);
 		void registerRessourceStorage(int64_t, Storable &);
 
+		const bool executeOnAllStates;
 		const std::unordered_set<int64_t> writeComponentAccess;
 		const std::unordered_set<int64_t> writeRessourceAccess;
 		const std::unordered_set<int64_t> executeOnState;
