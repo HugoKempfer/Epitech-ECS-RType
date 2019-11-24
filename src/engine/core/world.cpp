@@ -67,9 +67,13 @@ namespace Engine {
 	void World::run()
 	{
 		while (!states.empty()) {
+			auto currentStateUuid = states.current().getUUID();
 			states.current().onUpdate();
 			for (auto &sys : _dispatcher._systems) {
-				if (sys->executeOnState.contains(states.current().getUUID())) {
+				if (states.empty() || states.current().getUUID() != currentStateUuid) {
+					break;
+				}
+				if (sys->executeOnAllStates || sys->executeOnState.contains(currentStateUuid)) {
 					sys->run();
 				}
 			}
