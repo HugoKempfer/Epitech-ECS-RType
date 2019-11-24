@@ -8,12 +8,14 @@
 #ifndef WINDOW_HPP_SK6QEY7C
 #define WINDOW_HPP_SK6QEY7C
 
+#include <SFML/Graphics/Sprite.hpp>
 #include <SFML/Window.hpp>
 #include <SFML/System/String.hpp>
 #include "engine/system.hpp"
 #include "engine/world.hpp"
 #include "engine/event.hpp"
 #include "render/ressources.hpp"
+#include "render/sprite_component.hpp"
 
 namespace Engine::Render
 {
@@ -32,9 +34,11 @@ namespace Engine::Render
 
 		void onStart() override
 		{
-			auto &wRessource = this->getRessource<WindowRessource>();
+			auto &window = this->getRessource<WindowRessource>().window;
 
-			wRessource.window.create(sf::VideoMode(_width, _height), "damn");
+			window.create(sf::VideoMode(_width, _height), "damn");
+			window.setFramerateLimit(60);
+			window.setVerticalSyncEnabled(true);
 		}
 
 		~WindowSystem()
@@ -52,6 +56,24 @@ namespace Engine::Render
 		const int _width;
 	};
 
+	class RenderSystem : public System
+	{
+	public:
+		RenderSystem() = delete;
+		RenderSystem(World &world) :
+			System(world,
+					{world.uuidCtx.get<SpriteComponent>()},
+					{world.uuidCtx.get<WindowRessource>()})
+		{}
+		~RenderSystem() = default;
+
+		void run() override;
+
+	private:
+		sf::Sprite &getSprite(std::string const &);
+
+		std::unordered_map<std::string, sf::Sprite> _sprites;
+	};
 } /* Engine::Render */
 
 

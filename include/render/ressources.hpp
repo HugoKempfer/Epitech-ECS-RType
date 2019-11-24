@@ -8,7 +8,7 @@
 #ifndef RESSOURCES_HPP_KBW0ATIM
 #define RESSOURCES_HPP_KBW0ATIM
 
-#include <SFML/Window.hpp>
+#include <SFML/Graphics/RenderWindow.hpp>
 #include "engine/ressource.hpp"
 #include "engine/world.hpp"
 
@@ -21,7 +21,7 @@ namespace Engine::Render
 		WindowRessource(World &world) : Ressource<WindowRessource>(world) {}
 		~WindowRessource() = default;
 
-		sf::Window window;
+		sf::RenderWindow window;
 	};
 } /* Engine::Render */
 
