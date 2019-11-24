@@ -2,5 +2,12 @@
 boost_asio/1.69.0@bincrafters/stable
 sfml/2.5.1@bincrafters/stable
 
+[options]
+sfml:network=True
+sfml:window=True
+sfml:graphics=True
+sfml:network=True
+sfml:audio=True
+
 [generators]
 cmake
