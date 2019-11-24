@@ -69,3 +69,12 @@ Test(Event, sendEvent)
 	world.run();
 	cr_assert_eq(test, std::string("damn daniel"));
 }
+
+Test(Event, eventWithoutSubscribers)
+{
+	using namespace EventTestNs;
+	World world;
+
+	world.states.push<TestState>(world);
+	world.eventsCtx.publish<TestEvent>(world, "damn");
+}
