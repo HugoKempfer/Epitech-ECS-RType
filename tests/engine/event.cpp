@@ -46,7 +46,7 @@ namespace EventTestNs
 
 		void run() final {}
 
-		void handle(TestEvent const &event) const final
+		void handle(TestEvent const &event) final
 		{
 			_test = event.msg;
 			_world.states.pop();
