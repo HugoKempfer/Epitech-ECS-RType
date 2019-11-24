@@ -16,21 +16,6 @@
 
 namespace Engine::Render
 {
-	class KeystrokeEvent : public Event<KeystrokeEvent>
-	{
-	public:
-		enum Keys {
-			CLOSE
-		};
-
-		KeystrokeEvent() = delete;
-		KeystrokeEvent(World &world, Keys key) :
-			Event<KeystrokeEvent>(world.uuidCtx),
-			key(key)
-		{}
-
-		const enum Keys key;
-	};
 
 	class WindowSystem : public System
 	{
@@ -49,6 +34,7 @@ namespace Engine::Render
 		void run() override;
 
 	private:
+		void handleEvent(sf::Event &event);
 		sf::Window  _window;
 	};
 

@@ -13,6 +13,7 @@
 #include "engine/component.hpp"
 #include "engine/entity.hpp"
 #include "render/window.hpp"
+#include "render/events.hpp"
 
 void test_engine();
 void damn();
@@ -20,12 +21,12 @@ void damn();
 using namespace Engine;
 using namespace Engine::Render;
 
-class InitState : public State<InitState>, public EventHandler<KeystrokeEvent> {
+class InitState : public State<InitState>, public EventHandler<SignalEvent>{
 public:
 	InitState() = delete;
 	InitState(World &world) :
 		State<InitState>(world),
-		EventHandler<KeystrokeEvent>(world)
+		EventHandler<SignalEvent>(world)
 	{}
 
 	void onStart() final
@@ -38,13 +39,10 @@ public:
 		std::cout << "BYE" << std::endl;
 	}
 
-	void handle(KeystrokeEvent const &event) final
+	void handle(SignalEvent const &event) final
 	{
-		switch (event.key) {
-			case Render::KeystrokeEvent::CLOSE:
-				std::cout << "CLOSE" << std::endl;
-				_world.states.pop();
-				break;
+		if (event.signal == SignalEvent::CLOSE) {
+			_world.states.pop();
 		}
 	}
 };
