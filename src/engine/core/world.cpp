@@ -23,21 +23,17 @@ namespace Engine {
 
 	void World::processSystemRegistration(std::unique_ptr<System> &sys)
 	{
-		std::cerr << "REGISTER SYSTEM WOW" << std::endl;
 		for (auto &storage_id : sys->writeComponentAccess) {
 			if (!_components.contains(storage_id)) {
 				_components.insert({storage_id, std::vector<std::unique_ptr<Storable>>()});
 			}
 			sys->registerComponentStorage(storage_id, _components.at(storage_id));
 		}
-		std::cerr << "BEFORE DAMN REGISTER" << std::endl;
 		for (auto &storage_id : sys->writeRessourceAccess) {
 			if (!_ressources.contains(storage_id)) {
 				/* TODO: Use specialized error */
-				std::cerr << "NO RESSOURCE" << std::endl;
 				throw std::runtime_error("Ressource not yet registered");
 			}
-			std::cerr << "YESS" << std::endl;
 			sys->registerRessourceStorage(storage_id, *_ressources.at(storage_id));
 		}
 		sys->onStart();
