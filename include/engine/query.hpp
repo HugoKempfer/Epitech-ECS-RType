@@ -65,7 +65,7 @@ namespace Engine
 			}
 			_componentsUUIDs.insert(uuid);
 			for (auto &component : components) {
-				auto entityId = component.getEntityId();
+				auto entityId = component.get().getEntityId();
 				if (!_sortingList.contains(entityId)) {
 					_sortingList.insert({entityId, {}});
 				}
