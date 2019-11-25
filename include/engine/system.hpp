@@ -11,9 +11,11 @@
 #include <vector>
 #include <unordered_set>
 #include <unordered_map>
+#include "definitions.hpp"
 #include "storable.hpp"
 #include "component.hpp"
 #include "concepts_impl.hpp"
+#include "ressource.hpp"
 #include "world.hpp"
 
 namespace Engine
@@ -50,7 +52,6 @@ namespace Engine
 		//Use this for all non-local data initialization
 		virtual void onStart() {}
 
-	protected:
 		template <typename C> requires derived_from<C, Component<C>>
 		std::vector<std::reference_wrapper<C>> getComponents()
 		{
@@ -68,6 +69,7 @@ namespace Engine
 			return components;
 		}
 
+	protected:
 		template <typename R> requires derived_from<R, Ressource<R>>
 		R &getRessource()
 		{

@@ -17,8 +17,7 @@
 
 namespace Engine {
 	World::World()
-		: entities(*this), eventsCtx(*this)
-	{}
+		: entities(*this, _components), eventsCtx(*this)	{}
 
 	World::~World() {}
 

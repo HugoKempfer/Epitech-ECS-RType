@@ -11,13 +11,14 @@
 #include <vector>
 #include <unordered_map>
 #include "engine/game_storage.hpp"
+#include "engine/query.hpp"
 
 using std::mutex;
 
 namespace Engine
 {
-	EntityStorage::EntityStorage(World &world)
-		: _world(world)
+	EntityStorage::EntityStorage(World &world, ComponentStorage &components)
+		: _world(world), _components(components)
 	{}
 
 	Entity &EntityStorage::add() {
@@ -48,6 +49,11 @@ namespace Engine
 			_entities.clear();
 			_removeAll = false;
 		}
+	}
+
+	QueryBuilder EntityStorage::query(System &sys)
+	{
+		return QueryBuilder(_world.uuidCtx, *this, sys);
 	}
 
 	Entity &EntityStorage::operator[](std::size_t index)
