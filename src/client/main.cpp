@@ -8,14 +8,12 @@
 #include <iostream>
 #include <SFML/Window.hpp>
 #include <memory>
-#include "engine/world.hpp"
-#include "engine/state.hpp"
-#include "engine/component.hpp"
-#include "engine/entity.hpp"
+#include "engine/prelude.hpp"
 #include "render/window.hpp"
 #include "render/events.hpp"
 #include "render/sprite_component.hpp"
 #include "engine/built_in/position.hpp"
+#include "client/player.hpp"
 
 void test_engine();
 void damn();
@@ -30,18 +28,6 @@ public:
 		State<InitState>(world),
 		EventHandler<SignalEvent>(world)
 	{}
-
-	void onStart() final
-	{
-		std::cout << "STARTED" << std::endl;
-		_world.entities.add().addComponent<SpriteComponent>(_world, "./steph.jpg")
-			.addComponent<PositionComponent>(_world, 100, 100);
-	}
-
-	void onStop() final
-	{
-		std::cout << "BYE" << std::endl;
-	}
 
 	void handle(SignalEvent const &event) final
 	{
@@ -59,6 +45,7 @@ int main(int argc, char *argv[])
 	world.registerRessource<WindowRessource>(world);
 	world.registerSystem<WindowSystem>(world, 200, 30);
 	world.registerSystem<RenderSystem>(world);
+	world.registerSystem<PlayerSystem>(world);
 	world.run();
 	return 0;
 }

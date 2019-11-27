@@ -22,8 +22,6 @@ namespace Engine::Render
 		{}
 		virtual ~SpriteComponent() = default;
 
-		float posX = 0;
-		float posY = 0;
 		const std::string texturePath;
 		bool isVisible = true;
 	};

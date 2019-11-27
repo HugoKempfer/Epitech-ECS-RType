@@ -44,12 +44,7 @@ namespace Engine::Render
 			window.setVerticalSyncEnabled(true);
 		}
 
-		~WindowSystem()
-		{
-			auto &wRessource = this->getRessource<WindowRessource>();
-
-			wRessource.window.close();
-		}
+		~WindowSystem() = default;
 
 		void run() override;
 
