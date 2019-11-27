@@ -8,8 +8,8 @@
 #ifndef RESSOURCE_HPP_TXQGAZAL
 #define RESSOURCE_HPP_TXQGAZAL
 
-#include "storable.hpp"
 #include "world.hpp"
+#include "storable.hpp"
 
 namespace Engine
 {

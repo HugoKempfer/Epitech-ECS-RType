@@ -11,6 +11,7 @@
 #include <unordered_map>
 #include <vector>
 #include <memory>
+#include "definitions.hpp"
 #include "game_storage.hpp"
 #include "concepts_impl.hpp"
 #include "uuid.hpp"
@@ -70,8 +71,8 @@ namespace Engine {
 		void processSystemRegistration(std::unique_ptr<System> &);
 
 		Dispatcher _dispatcher;
-		std::unordered_map<int64_t, std::vector<std::unique_ptr<Storable>>> _components;
-		std::unordered_map<int64_t, std::unique_ptr<Storable>> _ressources;
+		ComponentStorage _components;
+		RessourceStorage _ressources;
 	};
 }
 

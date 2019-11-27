@@ -11,9 +11,11 @@
 #include <vector>
 #include <unordered_set>
 #include <unordered_map>
+#include "definitions.hpp"
 #include "storable.hpp"
 #include "component.hpp"
 #include "concepts_impl.hpp"
+#include "ressource.hpp"
 #include "world.hpp"
 
 namespace Engine
@@ -33,17 +35,23 @@ namespace Engine
 				std::unordered_set<int64_t> ressources,
 				std::unordered_set<int64_t> execOnState);
 
+		System(World &, std::unordered_set<int64_t> components,
+				std::unordered_set<int64_t> ressources);
+
 		virtual ~System() = default;
 		void registerComponentStorage(int64_t, std::vector<std::unique_ptr<Storable>> &);
 		void registerRessourceStorage(int64_t, Storable &);
 
+		const bool executeOnAllStates;
 		const std::unordered_set<int64_t> writeComponentAccess;
 		const std::unordered_set<int64_t> writeRessourceAccess;
 		const std::unordered_set<int64_t> executeOnState;
 		const State getState() const { return _systemState; }
 		virtual void run() = 0;
 
-	protected:
+		//Use this for all non-local data initialization
+		virtual void onStart() {}
+
 		template <typename C> requires derived_from<C, Component<C>>
 		std::vector<std::reference_wrapper<C>> getComponents()
 		{
@@ -61,6 +69,7 @@ namespace Engine
 			return components;
 		}
 
+	protected:
 		template <typename R> requires derived_from<R, Ressource<R>>
 		R &getRessource()
 		{
@@ -68,6 +77,7 @@ namespace Engine
 				auto uuid = _world.uuidCtx.get<R>();
 				return static_cast<R &>(_ressources.at(uuid).get());
 			} catch(std::exception e) {
+				/* TODO: Custom engine, access denied exception */
 				throw e;
 			}
 		}

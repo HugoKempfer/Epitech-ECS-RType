@@ -17,8 +17,7 @@
 
 namespace Engine {
 	World::World()
-		: entities(*this), eventsCtx(*this)
-	{}
+		: entities(*this, _components), eventsCtx(*this)	{}
 
 	World::~World() {}
 
@@ -37,6 +36,7 @@ namespace Engine {
 			}
 			sys->registerRessourceStorage(storage_id, *_ressources.at(storage_id));
 		}
+		sys->onStart();
 		_dispatcher._systems.push_back(std::move(sys));
 	}
 
@@ -67,9 +67,13 @@ namespace Engine {
 	void World::run()
 	{
 		while (!states.empty()) {
+			auto currentStateUuid = states.current().getUUID();
 			states.current().onUpdate();
 			for (auto &sys : _dispatcher._systems) {
-				if (sys->executeOnState.contains(states.current().getUUID())) {
+				if (states.empty() || states.current().getUUID() != currentStateUuid) {
+					break;
+				}
+				if (sys->executeOnAllStates || sys->executeOnState.contains(currentStateUuid)) {
 					sys->run();
 				}
 			}

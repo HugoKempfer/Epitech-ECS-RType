@@ -46,7 +46,7 @@ namespace EventTestNs
 
 		void run() final {}
 
-		void handle(TestEvent const &event) const final
+		void handle(TestEvent const &event) final
 		{
 			_test = event.msg;
 			_world.states.pop();
@@ -68,4 +68,13 @@ Test(Event, sendEvent)
 		.states.push<TestState>(world);
 	world.run();
 	cr_assert_eq(test, std::string("damn daniel"));
+}
+
+Test(Event, eventWithoutSubscribers)
+{
+	using namespace EventTestNs;
+	World world;
+
+	world.states.push<TestState>(world);
+	world.eventsCtx.publish<TestEvent>(world, "damn");
 }

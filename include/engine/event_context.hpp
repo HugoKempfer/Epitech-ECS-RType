@@ -62,7 +62,9 @@ namespace Engine
 		template <typename E, typename ... Args> requires derived_from<E, Event<E>>
 		void publish(Args && ...args)
 		{
-			_events.push(std::make_unique<E>(std::forward<Args>(args)...));
+			if (_listeners.contains(_uuid.get<E>())) {
+				_events.push(std::make_unique<E>(std::forward<Args>(args)...));
+			}
 		}
 
 	private:

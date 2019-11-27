@@ -9,6 +9,10 @@ if (APPLE)
 	set(CMAKE_CXX_COMPILER "/usr/local/Cellar/gcc/9.2.0_1/bin/g++-9")
 endif()
 
+if (DEFINED ENV{RTYPE_DEBUG})
+		set(CMAKE_BUILD_TYPE Debug)
+endif()
+
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
 add_definitions("-fPIC")
@@ -24,7 +28,7 @@ file(GLOB_RECURSE ENGINE
 		"src/engine/core/*.cpp",
 		)
 
-file(GLOB_RECURSE ENGINE_RENDER #TODO move this inside engine dir
+file(GLOB_RECURSE ENGINE_RENDER
 		"src/engine/render/*.cpp",
 		)
 
@@ -40,17 +44,24 @@ file(GLOB_RECURSE TEST_ENGINE
 		"tests/engine/*.cpp"
 		)
 
+file(GLOB_RECURSE TEST_RENDER
+		"tests/render/*.cpp"
+		)
+
 add_library(engine STATIC ${ENGINE})
 add_library(engine_render STATIC ${ENGINE_RENDER})
 
 add_executable(r-type_server ${SERVER})
 add_executable(r-type_client ${CLIENT})
 add_executable(engine_test ${TEST_ENGINE})
+add_executable(render_test ${TEST_RENDER})
 
 target_link_libraries(engine_render engine)
-target_link_libraries(r-type_server ${CONAN_LIBS} engine)
+target_link_libraries(r-type_server engine)
 target_link_libraries(r-type_client ${CONAN_LIBS} engine engine_render)
 
 target_link_libraries(engine_test engine criterion)
+target_link_libraries(render_test ${CONAN_LIBS} engine engine_render criterion)
 
-add_test(world bin/engine_test)
+add_test(engine bin/engine_test)
+add_test(render bin/render_test)
