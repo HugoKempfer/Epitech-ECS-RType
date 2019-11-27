@@ -28,7 +28,6 @@ namespace Engine {
 	template <typename T>
 	class Ressource;
 
-
 	class World
 	{
 	public:

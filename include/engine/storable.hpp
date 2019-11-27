@@ -21,7 +21,7 @@ namespace Engine
 			_context(context), UUID(uuid) {}
 		virtual ~Storable() = default;
 
-		template <typename DEST> requires derived_from<DEST, Storable>
+		template <typename DEST>
 		DEST cast()
 		{
 			if (_context.get<DEST>() != this->UUID) {

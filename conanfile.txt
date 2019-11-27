@@ -8,6 +8,7 @@ sfml:window=True
 sfml:graphics=True
 sfml:network=True
 sfml:audio=True
+sfml:shared=True
 
 [generators]
 cmake

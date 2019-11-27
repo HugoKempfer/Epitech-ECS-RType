@@ -10,12 +10,15 @@
 
 #include <SFML/Graphics/Sprite.hpp>
 #include <SFML/Window.hpp>
+#include <SFML/Graphics.hpp>
 #include <SFML/System/String.hpp>
 #include "engine/system.hpp"
 #include "engine/world.hpp"
 #include "engine/event.hpp"
 #include "render/ressources.hpp"
 #include "render/sprite_component.hpp"
+#include "engine/built_in/position.hpp"
+#include "engine/query.hpp"
 
 namespace Engine::Render
 {
@@ -62,7 +65,9 @@ namespace Engine::Render
 		RenderSystem() = delete;
 		RenderSystem(World &world) :
 			System(world,
-					{world.uuidCtx.get<SpriteComponent>()},
+					{world.uuidCtx.get<SpriteComponent>(),
+					world.uuidCtx.get<PositionComponent>()
+					},
 					{world.uuidCtx.get<WindowRessource>()})
 		{}
 		~RenderSystem() = default;
@@ -70,9 +75,11 @@ namespace Engine::Render
 		void run() override;
 
 	private:
-		sf::Sprite &getSprite(std::string const &);
+		sf::Sprite &getSprite(MatchedEntity &);
+		sf::Sprite &processSprite(MatchedEntity &);
 
 		std::unordered_map<std::string, sf::Sprite> _sprites;
+		std::unordered_map<std::string, sf::Texture> _textures;
 	};
 } /* Engine::Render */
 

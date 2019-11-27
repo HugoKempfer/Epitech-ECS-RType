@@ -12,17 +12,19 @@
 
 namespace Engine::Render
 {
-	class SpriteComponent : Component<SpriteComponent>
+	class SpriteComponent : public Component<SpriteComponent>
 	{
 	public:
 		SpriteComponent() = delete;
-		SpriteComponent(World &world, std::string &spritePath) :
+		SpriteComponent(World &world, std::string &texturePath) :
 			Component<SpriteComponent>(world),
-			spritePath(spritePath)
+			texturePath(texturePath)
 		{}
 		virtual ~SpriteComponent() = default;
 
-		const std::string spritePath;
+		float posX = 0;
+		float posY = 0;
+		const std::string texturePath;
 		bool isVisible = true;
 	};
 
