@@ -76,7 +76,7 @@ namespace Engine::Render
 
 	private:
 		sf::Sprite &getSprite(MatchedEntity &);
-		sf::Sprite &processSprite(MatchedEntity &);
+		sf::Sprite &processSprite(MatchedEntity &, sf::Sprite &);
 
 		std::unordered_map<std::string, sf::Sprite> _sprites;
 		std::unordered_map<std::string, sf::Texture> _textures;

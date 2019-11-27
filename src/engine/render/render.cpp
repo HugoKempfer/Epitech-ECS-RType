@@ -24,13 +24,12 @@ namespace Engine::Render
 		for (auto &entity : entities) {
 			window.draw(this->getSprite(entity));
 		}
-		/* TODO: Render every sprite component */
+		window.display();
 	}
 
-	sf::Sprite &RenderSystem::processSprite(MatchedEntity &entity)
+	sf::Sprite &RenderSystem::processSprite(MatchedEntity &entity, sf::Sprite &sprite)
 	{
 		const auto &position = entity.getComponent<PositionComponent>();
-		auto &sprite = this->getSprite(entity);
 
 		sprite.setPosition({position.pos_x, position.pos_y});
 		return sprite;
@@ -45,7 +44,6 @@ namespace Engine::Render
 			tex.loadFromFile(path);
 			_sprites.insert({path, sf::Sprite(tex)});
 		}
-		return _sprites.at(path);
+		return this->processSprite(entity, _sprites.at(path));
 	}
-
 } /* Engine::Render */

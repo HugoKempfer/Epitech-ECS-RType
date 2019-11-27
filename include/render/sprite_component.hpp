@@ -16,7 +16,7 @@ namespace Engine::Render
 	{
 	public:
 		SpriteComponent() = delete;
-		SpriteComponent(World &world, std::string &texturePath) :
+		SpriteComponent(World &world, std::string texturePath) :
 			Component<SpriteComponent>(world),
 			texturePath(texturePath)
 		{}

@@ -17,7 +17,10 @@ namespace Engine
 	{
 	public:
 		PositionComponent() = delete;
-		PositionComponent(World &world) : Component<PositionComponent>(world) {}
+		PositionComponent(World &world, float x = 0,
+				float y = 0) : Component<PositionComponent>(world),
+		pos_x(x), pos_y(y)
+		{}
 		~PositionComponent() = default;
 
 		float pos_x;

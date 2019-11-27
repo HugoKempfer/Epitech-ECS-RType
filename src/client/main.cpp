@@ -14,6 +14,8 @@
 #include "engine/entity.hpp"
 #include "render/window.hpp"
 #include "render/events.hpp"
+#include "render/sprite_component.hpp"
+#include "engine/built_in/position.hpp"
 
 void test_engine();
 void damn();
@@ -32,6 +34,8 @@ public:
 	void onStart() final
 	{
 		std::cout << "STARTED" << std::endl;
+		_world.entities.add().addComponent<SpriteComponent>(_world, "./steph.jpg")
+			.addComponent<PositionComponent>(_world, 100, 100);
 	}
 
 	void onStop() final
@@ -53,10 +57,8 @@ int main(int argc, char *argv[])
 
 	world.states.push<InitState>(world);
 	world.registerRessource<WindowRessource>(world);
-	std::cerr << "between" << std::endl;
 	world.registerSystem<WindowSystem>(world, 200, 30);
-	std::cerr << "after" << std::endl;
+	world.registerSystem<RenderSystem>(world);
 	world.run();
-	std::cerr << "after run" << std::endl;
 	return 0;
 }
