@@ -19,6 +19,7 @@
 #include "state_machine.hpp"
 #include "dispatcher.hpp"
 #include "event_context.hpp"
+#include "bundle.hpp"
 
 namespace Engine {
 
@@ -49,6 +50,15 @@ namespace Engine {
 			auto res = std::make_unique<T>(std::forward<Args>(args)...);
 
 			_ressources.insert({res->UUID, std::move(res)});
+			return *this;
+		}
+
+		template <typename B> requires derived_from<B, Bundle>
+		World &useBundle()
+		{
+			B bundle(*this);
+
+			bundle.apply();
 			return *this;
 		}
 

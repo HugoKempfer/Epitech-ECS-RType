@@ -12,6 +12,7 @@
 #include "render/window.hpp"
 #include "render/events.hpp"
 #include "render/sprite_component.hpp"
+#include "render/bundles.hpp"
 #include "engine/built_in/position.hpp"
 #include "client/player.hpp"
 
@@ -42,10 +43,8 @@ int main(int argc, char *argv[])
 	World world;
 
 	world.states.push<InitState>(world);
-	world.registerRessource<WindowRessource>(world);
-	world.registerSystem<WindowSystem>(world, 200, 30);
-	world.registerSystem<RenderSystem>(world);
 	world.registerSystem<PlayerSystem>(world);
+	world.useBundle<RenderBundle>();
 	world.run();
 	return 0;
 }
