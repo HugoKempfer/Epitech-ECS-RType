@@ -16,14 +16,21 @@ namespace Engine::Render
 	{
 	public:
 		SpriteComponent() = delete;
-		SpriteComponent(World &world, std::string texturePath) :
+		SpriteComponent(World &world, std::string texturePath, int height, int width, int framesNb = 1) :
 			Component<SpriteComponent>(world),
-			texturePath(texturePath)
+			texturePath(texturePath),
+			height(height),
+			width(width),
+			framesNb(framesNb)
 		{}
 		virtual ~SpriteComponent() = default;
 
 		const std::string texturePath;
 		bool isVisible = true;
+		int height;
+		int width;
+		const int framesNb;
+		int currentFrame = 1;
 	};
 
 } /* Engine::Render */

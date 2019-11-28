@@ -62,5 +62,5 @@ void PlayerSystem::onStart()
 {
 	_world.entities.add().addComponent<PlayerComponent>(_world)
 		.addComponent<Engine::PositionComponent>(_world)
-		.addComponent<Engine::Render::SpriteComponent>(_world, "Damn.png");
+		.addComponent<Engine::Render::SpriteComponent>(_world, "Damn.png", 50, 50, 4);
 }

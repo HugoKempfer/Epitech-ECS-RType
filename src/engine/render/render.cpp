@@ -14,7 +14,6 @@ namespace Engine::Render
 {
 	void RenderSystem::run()
 	{
-		/* auto sprites = this->getComponents<SpriteComponent>(); */
 		auto entities = _world.entities.query(*this)
 			.with<PositionComponent>()
 			.with<SpriteComponent>().getIntersection();
@@ -22,7 +21,9 @@ namespace Engine::Render
 
 		window.clear(sf::Color::Black);
 		for (auto &entity : entities) {
-			window.draw(this->getSprite(entity));
+			if (entity.getComponent<SpriteComponent>().isVisible) {
+				window.draw(this->getSprite(entity));
+			}
 		}
 		window.display();
 	}
@@ -30,8 +31,21 @@ namespace Engine::Render
 	sf::Sprite &RenderSystem::processSprite(MatchedEntity &entity, sf::Sprite &sprite)
 	{
 		const auto &position = entity.getComponent<PositionComponent>();
+		auto &spriteComp = entity.getComponent<SpriteComponent>();
 
 		sprite.setPosition({position.pos_x, position.pos_y});
+		if (spriteComp.framesNb > 1) {
+			sprite.setTextureRect(sf::IntRect(
+						(spriteComp.currentFrame - 1) * spriteComp.width,
+						0,
+						spriteComp.width,
+						spriteComp.height));
+			if (spriteComp.currentFrame == spriteComp.framesNb) {
+				spriteComp.currentFrame = 1;
+			} else {
+				++spriteComp.currentFrame;
+			}
+		}
 		return sprite;
 	}
 
