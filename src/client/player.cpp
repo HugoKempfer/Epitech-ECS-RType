@@ -9,6 +9,7 @@
 #include "render/events.hpp"
 #include "engine/built_in/position.hpp"
 #include "render/sprite_component.hpp"
+#include "client/bullet.hpp"
 
 void PlayerSystem::run()
 {
@@ -35,6 +36,22 @@ void PlayerSystem::handleMoves()
 	}
 }
 
+void PlayerSystem::shoot()
+{
+	using Engine::PositionComponent;
+	using Engine::Render::SpriteComponent;
+
+	const auto player = _world.entities.query(*this)
+		.with<PlayerComponent>()
+		.with<PositionComponent>()
+		.getIntersection()[0].getComponent<PositionComponent>();
+
+	_world.entities.add()
+		.addComponent<BulletComponent>(_world, BulletComponent::RIGHT)
+		.addComponent<Engine::PositionComponent>(_world, player.pos_x, player.pos_y)
+		.addComponent<SpriteComponent>(_world, "Damn.png", 15, 20);
+}
+
 void PlayerSystem::handle(KeystrokeEvent const &event)
 {
 	using Engine::Render::Keyboard;
@@ -52,6 +69,11 @@ void PlayerSystem::handle(KeystrokeEvent const &event)
 			break;
 		case sf::Keyboard::Down:
 			_arrows[DOWN] = keyState;
+			break;
+		case sf::Keyboard::Space:
+			if (event.actionType == KeystrokeEvent::KEY_PRESSED) {
+				this->shoot();
+			}
 			break;
 		default:
 			break;

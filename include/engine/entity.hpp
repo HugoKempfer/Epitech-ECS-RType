@@ -28,7 +28,7 @@ namespace Engine {
 		Entity() = delete;
 		Entity(int64_t id, World &world);
 		Entity(const Entity &);
-		~Entity() = default;
+		~Entity();
 
 		template <typename T, typename ... Args> requires derived_from<T, Component<T>>
 		Entity &addComponent(Args && ...args)

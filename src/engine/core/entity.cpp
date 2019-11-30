@@ -20,6 +20,17 @@ namespace Engine
 		_uuidCtx(_world.uuidCtx)
 	{}
 
+	Entity::~Entity()
+	{
+		std::lock_guard<std::mutex> lock(_componentProcess);
+
+		for (auto it : _componentsRef) {
+			std::cerr << it.second.get()->UUID << std::endl;
+			std::cerr << it.second.get()->UUID << std::endl;
+			this->processComponentRemoval(it.second.get());
+		}
+	}
+
 	Entity::Entity(int64_t id, World &world) :
 		id(id), _world(world), _uuidCtx(world.uuidCtx)
 	{}
@@ -28,9 +39,9 @@ namespace Engine
 	{
 		std::lock_guard<std::mutex> lock(_componentProcess);
 
-		_boundComponentsType.insert(component->UUID);
-		_componentsRef.insert({component->UUID, component});
-		_world.storeComponent(component);
+		auto &moved = _world.storeComponent(component);
+		_boundComponentsType.insert(moved->UUID);
+		_componentsRef.insert({moved->UUID, {moved}});
 	}
 
 	void Entity::processComponentRemoval(std::unique_ptr<Storable> &component)

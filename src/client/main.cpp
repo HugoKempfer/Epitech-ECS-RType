@@ -15,6 +15,7 @@
 #include "render/bundles.hpp"
 #include "engine/built_in/position.hpp"
 #include "client/player.hpp"
+#include "client/bullet.hpp"
 
 void test_engine();
 void damn();
@@ -43,8 +44,9 @@ int main(int argc, char *argv[])
 	World world;
 
 	world.states.push<InitState>(world);
-	world.registerSystem<PlayerSystem>(world);
 	world.useBundle<RenderBundle>();
+	world.registerSystem<PlayerSystem>(world);
+	world.registerSystem<BulletSystem>(world);
 	world.run();
 	return 0;
 }

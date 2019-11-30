@@ -63,7 +63,7 @@ namespace Engine {
 		}
 
 		//Don't directly call this method => Deprecated
-		void storeComponent(std::unique_ptr<Storable> &);
+		std::unique_ptr<Storable> &storeComponent(std::unique_ptr<Storable> &);
 
 		//Don't directly call this method => Deprecated
 		void removeComponent(std::unique_ptr<Storable> &);

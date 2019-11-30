@@ -40,7 +40,7 @@ namespace Engine {
 		_dispatcher._systems.push_back(std::move(sys));
 	}
 
-	void World::storeComponent(std::unique_ptr<Storable> &component)
+	std::unique_ptr<Storable> &World::storeComponent(std::unique_ptr<Storable> &component)
 	{
 		if (!_components.contains(component->UUID)) {
 			_components.insert({component->UUID, std::vector<std::unique_ptr<Storable>>()});
@@ -48,9 +48,12 @@ namespace Engine {
 		try {
 			auto &storage = _components.at(component->UUID);
 			storage.push_back(std::move(component));
+			return storage.back();
 		} catch(std::out_of_range e) {
 			std::cerr << e.what() << std::endl;
 		}
+		/* TODO: Use engine exception */
+		throw std::runtime_error("Can't insert component");
 	}
 
 	void World::removeComponent(std::unique_ptr<Storable> &component)

@@ -44,6 +44,7 @@ public:
 
 private:
 	void handleMoves();
+	void shoot();
 	enum Arrows {LEFT, UP, DOWN, RIGHT, SIZE};
 	bool _arrows[Arrows::SIZE] = {false};
 	const float MOVE_SPEED = 8;
