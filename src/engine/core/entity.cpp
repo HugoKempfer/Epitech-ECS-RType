@@ -39,7 +39,6 @@ namespace Engine
 		std::lock_guard<std::mutex> lock(_componentProcess);
 
 		auto &moved = _world.storeComponent(component);
-		printf("Moved => %p\n", &moved);
 		_boundComponentsType.insert(moved->UUID);
 		_componentsRef.insert({moved->UUID, {*moved}});
 	}

@@ -24,8 +24,8 @@ namespace Engine
 		template <typename DEST>
 		DEST cast()
 		{
-			if (_context.get<DEST>() != this->UUID) {
-				/* throw std::runtime_error("Bad end type"); */
+			if (_context.get<DEST>() != this->UUID && _context.get<DEST &>()) {
+				throw std::runtime_error("Bad end type");
 			}
 			return static_cast<DEST>(*this);
 		}
