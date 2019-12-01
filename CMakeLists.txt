@@ -11,6 +11,8 @@ endif()
 
 if (DEFINED ENV{RTYPE_DEBUG})
 		set(CMAKE_BUILD_TYPE Debug)
+		add_definitions("-Wall -Wextra")
+		add_definitions("-fsanitize=address")
 endif()
 
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
