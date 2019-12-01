@@ -21,29 +21,17 @@ conan_basic_setup()
 include_directories(${CMAKE_INCLUDE_PATH})
 include_directories("./include/")
 
-file(GLOB_RECURSE ENGINE
-		"src/engine/core/*.cpp",
-		)
+file(GLOB_RECURSE ENGINE "src/engine/core/*.cpp")
 
-file(GLOB_RECURSE ENGINE_RENDER
-		"src/engine/render/*.cpp",
-		)
+file(GLOB_RECURSE ENGINE_RENDER "src/engine/render/*.cpp")
 
-file(GLOB_RECURSE SERVER
-		"src/server/*.cpp",
-		)
+file(GLOB_RECURSE SERVER "src/server/*.cpp")
 
-file(GLOB_RECURSE CLIENT
-		"src/client/*.cpp",
-		)
+file(GLOB_RECURSE CLIENT "src/client/*.cpp")
 
-file(GLOB_RECURSE TEST_ENGINE
-		"tests/engine/*.cpp"
-		)
+file(GLOB_RECURSE TEST_ENGINE "tests/engine/*.cpp")
 
-file(GLOB_RECURSE TEST_RENDER
-		"tests/render/*.cpp"
-		)
+file(GLOB_RECURSE TEST_RENDER "tests/render/*.cpp")
 
 add_library(engine STATIC ${ENGINE})
 add_library(engine_render STATIC ${ENGINE_RENDER})
@@ -66,6 +54,7 @@ add_test(render bin/render_test)
 
 if (DEFINED ENV{RTYPE_DEBUG})
 		set(CMAKE_BUILD_TYPE Debug)
-		add_definitions("-Wall -Wextra")
+		add_definitions("-Wall -Wextra -fipa-pure-const
+		-Wsuggest-attribute=const")
 		set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fsanitize=address -fsanitize=leak -g")
 endif()
