@@ -18,7 +18,7 @@ namespace Engine
 	public:
 		Storable() = delete;
 		Storable(UUIDContext &context, int64_t uuid) :
-			_context(context), UUID(uuid) {}
+			UUID(uuid), _context(context) {}
 		virtual ~Storable() = default;
 
 		template <typename DEST>

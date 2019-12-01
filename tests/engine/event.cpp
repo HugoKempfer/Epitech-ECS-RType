@@ -16,8 +16,9 @@ namespace EventTestNs
 	class TestEvent : public Event<TestEvent> {
 	public:
 		TestEvent(World &world, std::string str) :
-			msg(str),
-			Event<TestEvent>(world.uuidCtx) {}
+			Event<TestEvent>(world.uuidCtx),
+			msg(str)
+		{}
 
 		std::string msg;
 	};

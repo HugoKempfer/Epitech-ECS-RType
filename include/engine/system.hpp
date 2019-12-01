@@ -46,7 +46,7 @@ namespace Engine
 		const std::unordered_set<int64_t> writeComponentAccess;
 		const std::unordered_set<int64_t> writeRessourceAccess;
 		const std::unordered_set<int64_t> executeOnState;
-		const State getState() const { return _systemState; }
+		State getState() const { return _systemState; }
 		virtual void run() = 0;
 
 		//Use this for all non-local data initialization
@@ -63,7 +63,7 @@ namespace Engine
 				for (auto &component : ref) {
 					components.push_back({static_cast<C &>(*component)});
 				}
-			} catch(std::exception e) {
+			} catch(std::exception &e) {
 				throw e;
 			}
 			return components;
@@ -76,7 +76,7 @@ namespace Engine
 			try {
 				auto uuid = _world.uuidCtx.get<R>();
 				return static_cast<R &>(_ressources.at(uuid).get());
-			} catch(std::exception e) {
+			} catch(std::exception &e) {
 				/* TODO: Custom engine, access denied exception */
 				throw e;
 			}

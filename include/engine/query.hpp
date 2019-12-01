@@ -49,8 +49,8 @@ namespace Engine
 		QueryBuilder() = delete;
 		QueryBuilder(UUIDContext &uuid, EntityStorage &entities, System &sys) :
 			_entities(entities),
-			_sys(sys),
-			_uuid(uuid)
+			_uuid(uuid),
+			_sys(sys)
 		{}
 		~QueryBuilder() = default;
 

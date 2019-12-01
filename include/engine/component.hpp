@@ -23,7 +23,7 @@ namespace Engine
 		Component() = delete;
 
 	Component(World &world)
-		: _world(world), Storable(world.uuidCtx, world.uuidCtx.get<Item>())
+		:  Storable(world.uuidCtx, world.uuidCtx.get<Item>()), _world(world)
 	{}
 		virtual ~Component() {
 			std::cout << "DESTROY COMP" << std::endl;

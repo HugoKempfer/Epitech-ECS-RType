@@ -17,7 +17,9 @@
 
 namespace Engine {
 	World::World()
-		: entities(*this, _components), eventsCtx(*this) {}
+		: eventsCtx(*this),
+		entities(*this, _components)
+	{}
 
 	World::~World() {}
 
@@ -50,7 +52,7 @@ namespace Engine {
 			storage.push_back(std::move(component));
 			auto &damn = storage.back();
 			return damn;
-		} catch(std::out_of_range e) {
+		} catch(std::out_of_range &e) {
 			std::cerr << e.what() << std::endl;
 		}
 		/* TODO: Use engine exception */
@@ -66,7 +68,7 @@ namespace Engine {
 					return &*obj == &component;
 					});
 			storage.erase(it);
-		} catch(std::out_of_range e) {
+		} catch(std::out_of_range &e) {
 			/* TODO: handle exception */
 		}
 	}

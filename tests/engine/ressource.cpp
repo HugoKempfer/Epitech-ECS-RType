@@ -51,7 +51,6 @@ Test(System, getRessource)
 		int _cycle = 0;
 	};
 
-	int count;
 	std::string damn("damn daniel");
 
 	World world;

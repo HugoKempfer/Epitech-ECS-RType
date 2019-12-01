@@ -41,7 +41,8 @@ namespace Engine
 	{
 	public:
 		State() = delete;
-		State(World &world) : _world(world), Storable(world.uuidCtx, world.uuidCtx.get<Item>())
+		State(World &world) : Storable(world.uuidCtx, world.uuidCtx.get<Item>()),
+_world(world)
 		{}
 
 		virtual ~State() = default;

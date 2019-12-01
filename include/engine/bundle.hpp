@@ -28,9 +28,9 @@ public:
 		this->registerSystems(_world);
 	}
 
-	virtual void registerRessources(World &world) {}
-	virtual void registerSystems(World &world) {}
-	virtual void registerEntities(World &world) {}
+	virtual void registerRessources(World &) {}
+	virtual void registerSystems(World &) {}
+	virtual void registerEntities(World &) {}
 private:
 	World &_world;
 };

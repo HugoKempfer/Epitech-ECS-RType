@@ -16,8 +16,8 @@ namespace Engine
 	Entity::Entity(const Entity &old)
 		: id(old.id),
 		_world(old._world),
-		_boundComponentsType(old._boundComponentsType),
-		_uuidCtx(_world.uuidCtx)
+		_uuidCtx(_world.uuidCtx),
+		_boundComponentsType(old._boundComponentsType)
 	{}
 
 	void Entity::onDestroy()

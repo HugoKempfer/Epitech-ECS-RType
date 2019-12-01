@@ -15,20 +15,22 @@ namespace Engine
 			std::unordered_set<int64_t> componentAccess,
 			std::unordered_set<int64_t> ressourceAccess,
 			std::unordered_set<int64_t> affectToState)
-			: _world(world),
+			:
+			executeOnAllStates(false),
 			writeComponentAccess(componentAccess),
 			writeRessourceAccess(ressourceAccess),
 			executeOnState(affectToState),
-			executeOnAllStates(false)
+			_world(world)
 		{}
 
 	System::System(World &world,
 			std::unordered_set<int64_t> componentAccess,
 			std::unordered_set<int64_t> ressourceAccess)
-			: _world(world),
+			:
+			executeOnAllStates(true),
 			writeComponentAccess(componentAccess),
 			writeRessourceAccess(ressourceAccess),
-			executeOnAllStates(true)
+			_world(world)
 		{}
 
 	void System::registerComponentStorage(int64_t uuid, std::vector<std::unique_ptr<Storable>> &storable)

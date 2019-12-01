@@ -7,7 +7,7 @@
 
 #include <iostream>
 
-int main(int argc, char *argv[])
+int main()
 {
 	std::cout << "Damn server" << std::endl;
 	return 0;
