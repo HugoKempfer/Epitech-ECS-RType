@@ -9,11 +9,6 @@ if (APPLE)
 	set(CMAKE_CXX_COMPILER "/usr/local/Cellar/gcc/9.2.0_1/bin/g++-9")
 endif()
 
-if (DEFINED ENV{RTYPE_DEBUG})
-		set(CMAKE_BUILD_TYPE Debug)
-		add_definitions("-Wall -Wextra")
-		add_definitions("-fsanitize=address")
-endif()
 
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
@@ -67,3 +62,10 @@ target_link_libraries(render_test ${CONAN_LIBS} engine engine_render criterion)
 
 add_test(engine bin/engine_test)
 add_test(render bin/render_test)
+
+
+if (DEFINED ENV{RTYPE_DEBUG})
+		set(CMAKE_BUILD_TYPE Debug)
+		add_definitions("-Wall -Wextra")
+		set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fsanitize=address -fsanitize=leak -g")
+endif()
