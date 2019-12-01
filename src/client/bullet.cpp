@@ -30,6 +30,7 @@ void BulletSystem::processMoves()
 				break;
 		}
 		if (pos.pos_x > window_size.x || pos.pos_x < 0) {
+			printf("Remove => %ld\n", entity.entity.id);
 			_world.entities.doRemove(entity.entity.id);
 		}
 	}

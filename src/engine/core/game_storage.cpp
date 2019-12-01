@@ -41,6 +41,9 @@ namespace Engine
 
 		while (!_removeQueue.empty()) {
 			if (!_removeAll) {
+				auto &tcon = _entities.at(_removeQueue.front());
+				/* _entities[_removeQueue.front()].onDestroy(); */
+				tcon.onDestroy();
 				_entities.erase(_removeQueue.front());
 			}
 			_removeQueue.pop();

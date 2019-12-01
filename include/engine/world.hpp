@@ -66,7 +66,7 @@ namespace Engine {
 		std::unique_ptr<Storable> &storeComponent(std::unique_ptr<Storable> &);
 
 		//Don't directly call this method => Deprecated
-		void removeComponent(std::unique_ptr<Storable> &);
+		void removeComponent(Storable &);
 
 		//Launch the event loop
 		void run();

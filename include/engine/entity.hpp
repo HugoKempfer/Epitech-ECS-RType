@@ -28,7 +28,9 @@ namespace Engine {
 		Entity() = delete;
 		Entity(int64_t id, World &world);
 		Entity(const Entity &);
-		~Entity();
+		~Entity() = default;
+
+		void onDestroy();
 
 		template <typename T, typename ... Args> requires derived_from<T, Component<T>>
 		Entity &addComponent(Args && ...args)
@@ -47,7 +49,7 @@ namespace Engine {
 			std::lock_guard<std::mutex> lock(_componentProcess);
 			auto uuid = _uuidCtx.get<T>();
 
-			auto &component = _componentsRef.at(uuid);
+			auto &component = _componentsRef.at(uuid).get();
 			_boundComponentsType.erase(uuid);
 			_componentsRef.erase(uuid);
 			this->processComponentRemoval(component);
@@ -58,13 +60,13 @@ namespace Engine {
 
 	private:
 		void processComponentInsertion(std::unique_ptr<Storable> &);
-		void processComponentRemoval(std::unique_ptr<Storable> &);
+		void processComponentRemoval(Storable &);
 
 		World &_world;
 		UUIDContext &_uuidCtx;
 		std::mutex _componentProcess;
 		std::unordered_set<int64_t> _boundComponentsType;
-		std::unordered_map<int64_t, std::reference_wrapper<std::unique_ptr<Storable>>> _componentsRef;
+		std::unordered_map<int64_t, std::reference_wrapper<Storable>> _componentsRef;
 	};
 }
 

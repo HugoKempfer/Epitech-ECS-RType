@@ -17,7 +17,7 @@
 
 namespace Engine {
 	World::World()
-		: entities(*this, _components), eventsCtx(*this)	{}
+		: entities(*this, _components), eventsCtx(*this) {}
 
 	World::~World() {}
 
@@ -48,7 +48,8 @@ namespace Engine {
 		try {
 			auto &storage = _components.at(component->UUID);
 			storage.push_back(std::move(component));
-			return storage.back();
+			auto &damn = storage.back();
+			return damn;
 		} catch(std::out_of_range e) {
 			std::cerr << e.what() << std::endl;
 		}
@@ -56,11 +57,14 @@ namespace Engine {
 		throw std::runtime_error("Can't insert component");
 	}
 
-	void World::removeComponent(std::unique_ptr<Storable> &component)
+	void World::removeComponent(Storable &component)
 	{
 		try {
-			auto &storage = _components.at(component->UUID);
-			auto it = std::find(storage.begin(), storage.end(), component);
+			auto &storage = _components.at(component.UUID);
+			auto it = std::find_if(storage.begin(), storage.end(),
+					[&](std::unique_ptr<Storable> const &obj) {
+					return &*obj == &component;
+					});
 			storage.erase(it);
 		} catch(std::out_of_range e) {
 			/* TODO: handle exception */

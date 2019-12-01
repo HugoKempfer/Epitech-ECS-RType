@@ -25,7 +25,9 @@ namespace Engine
 	Component(World &world)
 		: _world(world), Storable(world.uuidCtx, world.uuidCtx.get<Item>())
 	{}
-		virtual ~Component() = default;
+		virtual ~Component() {
+			std::cout << "DESTROY COMP" << std::endl;
+		}
 		void initEntityId(int64_t id)
 		{
 			if (_entityId == -1) {
