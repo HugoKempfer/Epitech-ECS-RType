@@ -25,6 +25,8 @@ file(GLOB_RECURSE ENGINE "src/engine/core/*.cpp")
 
 file(GLOB_RECURSE ENGINE_RENDER "src/engine/render/*.cpp")
 
+file(GLOB_RECURSE ENGINE_NETWORK "src/engine/network/*.cpp")
+
 file(GLOB_RECURSE SERVER "src/server/*.cpp")
 
 file(GLOB_RECURSE CLIENT "src/client/*.cpp")
@@ -33,7 +35,7 @@ file(GLOB_RECURSE TEST_ENGINE "tests/engine/*.cpp")
 
 file(GLOB_RECURSE TEST_RENDER "tests/render/*.cpp")
 
-add_library(engine STATIC ${ENGINE})
+add_library(engine STATIC ${ENGINE} ${ENGINE_NETWORK})
 add_library(engine_render STATIC ${ENGINE_RENDER})
 
 add_executable(r-type_server ${SERVER})
