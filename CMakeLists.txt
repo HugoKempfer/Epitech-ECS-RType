@@ -56,9 +56,15 @@ add_test(engine bin/engine_test)
 add_test(render bin/render_test)
 
 
-if (DEFINED ENV{RTYPE_DEBUG})
+if (DEFINED ENV{RTYPE_ASAN})
 		set(CMAKE_BUILD_TYPE Debug)
 		add_definitions("-Wall -Wextra -fipa-pure-const
 		-Wsuggest-attribute=const")
 		set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fsanitize=address -fsanitize=leak -g")
+endif()
+if (DEFINED ENV{RTYPE_DEBUG})
+		set(CMAKE_BUILD_TYPE Debug)
+		add_definitions("-Wall -Wextra -fipa-pure-const
+		-Wsuggest-attribute=const")
+		set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -g")
 endif()
