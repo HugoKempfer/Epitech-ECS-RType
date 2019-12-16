@@ -14,7 +14,6 @@
 #include "network/socket.hpp"
 #include "network/message.hpp"
 
-
 namespace Engine::Network::Server
 {
 
@@ -43,7 +42,8 @@ namespace Engine::Network::Server
 	void UDPServer::pollClientsMsg()
 	{
 		for (auto &client : _clients) {
-			_socket.async_receive_from(boost::asio::buffer(_rcvBuff), client,
+			_socket.async_receive_from(boost::asio::buffer(_rcvBuff),
+					client.second._endpoint,
 					boost::bind(&UDPServer::rcvMsgCallback,
 						this,
 						boost::asio::placeholders::error,
@@ -57,8 +57,9 @@ namespace Engine::Network::Server
 		if (err) {
 			std::cerr << err.error_code::message() << std::endl;
 		}
+		auto id = _clientIdAI++;
 		std::cout.write(_rcvBuff.data(), 20);
-		_clients.push_back(_newRemoteEndpoint);
+		_clients.insert({id, Client(id, _newRemoteEndpoint, *this)});
 		_rcvBuff.fill(0);
 		this->listenForClients();
 	}
@@ -82,6 +83,9 @@ namespace Engine::Network::Server
 	{
 		/* TODO: Handle err */
 		std::cout << "Message sent" << std::endl;
+		if (err) {
+			std::cerr << "ERR WHILE SENDING MSG" << std::endl;
+		}
 	}
 
 	void UDPServer::rcvMsgCallback(const boost::system::error_code &err, size_t size)
@@ -102,17 +106,44 @@ namespace Engine::Network::Server
 	void Client::doSendMsg(Message msg)
 	{
 		_outgoingMsg.push(msg);
+		this->dispatchMessages();
 	}
 
 } /* Engine::Network::Server */
 
 namespace Engine::Network::Client
 {
-	UDPClient::UDPClient(boost::asio::io_context &ioCtx, std::string host, unsigned short port)
-		: _resolver(ioCtx), _serverEndpoint(*_resolver.resolve(udp::v4(), host, "damn")),
+	UDPClient::UDPClient(boost::asio::io_context &ioCtx, std::string host, std::string port)
+		: _resolver(ioCtx), _serverEndpoint(*_resolver.resolve({udp::v4(), host, port})),
 		_socket(ioCtx)
 	{
 		_socket.open(udp::v4());
+	}
+
+	void UDPClient::setupConnection()
+	{
+		this->listenServerMsg();
+	}
+
+	void UDPClient::listenServerMsg()
+	{
+		using namespace boost::asio;
+
+		_socket.async_receive_from(buffer(_rcvBuff), _serverEndpoint,
+				boost::bind(&UDPClient::rcvMsgCallback, this,
+					placeholders::error,
+					placeholders::bytes_transferred));
+	}
+
+	void UDPClient::rcvMsgCallback(const boost::system::error_code &, size_t)
+	{
+		/* TODO: Handle server msg */
+		this->listenServerMsg();
+	}
+
+	void UDPClient::sendMsgCallback(Message msg, const boost::system::error_code &, size_t)
+	{
+		/* TODO: Handle server msg send */
 	}
 
 } /* Engine::Network::Client */

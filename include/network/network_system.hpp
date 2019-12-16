@@ -28,9 +28,11 @@ namespace Engine::Network
 		{}
 
 		bool isConnectionOpened() const;
-		void openAsClient(std::string &host, unsigned short port);
+		void openAsClient(std::string &host, std::string port);
 		void openAsServer(unsigned short port);
 		void closeConnection();
+		Server &getAsServer();
+		Client &getAsClient();
 
 	private:
 		void scheduleNetwork();

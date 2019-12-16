@@ -12,6 +12,7 @@
 #include <functional>
 #include <queue>
 #include <climits>
+#include <unordered_map>
 
 #include <boost/array.hpp>
 #include <boost/bind.hpp>
@@ -38,30 +39,7 @@ namespace Engine::Network
 namespace Engine::Network::Server
 {
 	using Message = Engine::Network::Message;
-	class Client;
-
-	class UDPServer : public IUDPNetwork
-	{
-	public:
-		UDPServer() = delete;
-		UDPServer(boost::asio::io_context &ioCtx, unsigned short port);
-
-		void sendMsgToClient(Message const &msg, Client &client);
-		void pollClientsMsg();
-		void listenForClients();
-		void setupConnection() final;
-
-	private:
-
-		void acceptNewClient(boost::system::error_code const &err, size_t size);
-		void sendMsgCallback(Message msg, const boost::system::error_code &, size_t);
-		void rcvMsgCallback(const boost::system::error_code &, size_t);
-
-		udp::endpoint _newRemoteEndpoint;
-		std::list<udp::endpoint> _clients;
-		boost::array<char, USHRT_MAX> _rcvBuff;
-		udp::socket _socket;
-	};
+	class UDPServer;
 
 	class Client
 	{
@@ -83,20 +61,51 @@ namespace Engine::Network::Server
 
 		friend UDPServer;
 	};
+
+	class UDPServer : public IUDPNetwork
+	{
+	public:
+		UDPServer() = delete;
+		UDPServer(boost::asio::io_context &ioCtx, unsigned short port);
+
+		void sendMsgToClient(Message const &msg, Client &client);
+		void pollClientsMsg();
+		void listenForClients();
+		void setupConnection() final;
+		Client &getClient(int64_t id) { return _clients.at(id); }
+
+	private:
+		void acceptNewClient(boost::system::error_code const &err, size_t size);
+		void sendMsgCallback(Message msg, const boost::system::error_code &, size_t);
+		void rcvMsgCallback(const boost::system::error_code &, size_t);
+
+		udp::endpoint _newRemoteEndpoint;
+		int64_t _clientIdAI = 0;
+		std::unordered_map<int64_t, Client> _clients;
+		boost::array<char, USHRT_MAX> _rcvBuff;
+		udp::socket _socket;
+	};
+
 } /* Engine::Network */
 
 namespace Engine::Network::Client
 {
-	class UDPClient
+	class UDPClient : public IUDPNetwork
 	{
 	public:
 		UDPClient() = delete;
-		UDPClient(boost::asio::io_context &ioCtx, std::string host, unsigned short port);
+		UDPClient(boost::asio::io_context &ioCtx, std::string host, std::string port);
+
+		void setupConnection() final;
 
 	private:
+		void listenServerMsg();
+		void rcvMsgCallback(const boost::system::error_code &, size_t);
+		void sendMsgCallback(Message msg, const boost::system::error_code &, size_t);
 		udp::resolver _resolver;
 		udp::endpoint _serverEndpoint;
 		udp::socket _socket;
+		boost::array<char, USHRT_MAX> _rcvBuff;
 	};
 
 } /* Engine::Network::Client */

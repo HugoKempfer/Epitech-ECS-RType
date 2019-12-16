@@ -22,15 +22,30 @@ namespace Engine::Network
 			return _connectionState != CLOSED;
 		}
 
-		void NetworkContainer::openAsClient(std::string &host, unsigned short port)
+		NetworkContainer::Server &NetworkContainer::getAsServer()
+		{
+			if (_connectionState != SERVER) {
+				throw std::runtime_error("No connection opened as server");
+			}
+			return std::get<Server>(*_container);
+		}
+
+		NetworkContainer::Client &NetworkContainer::getAsClient()
+		{
+			if (_connectionState != CLIENT) {
+				throw std::runtime_error("No connection opened as server");
+			}
+			return std::get<Client>(*_container);
+		}
+
+		void NetworkContainer::openAsClient(std::string &host, std::string port)
 		{
 			if (_connectionState != CLOSED) {
 				throw std::runtime_error("Connection already opened");
 			}
 			_connectionState = CLIENT;
 			_container = Client(_ioCtx, host, port);
-			/* _socketRef = std::get<Server>(*_container); */
-			/* TODO: Un-comment when UDPclient implements IUDPNetwork */
+			_socketRef = std::get<Server>(*_container);
 			_thread = std::make_unique<std::thread>(&NetworkContainer::scheduleNetwork, this);
 		}
 
@@ -50,7 +65,8 @@ namespace Engine::Network
 			_connectionState = CLOSED;
 			_ioCtx.stop();
 			_thread->join();
-			_thread = nullptr;
+			_socketRef = std::nullopt;
+			_thread.reset(nullptr);
 		}
 
 		void NetworkContainer::scheduleNetwork()
