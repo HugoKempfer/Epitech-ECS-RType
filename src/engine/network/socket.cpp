@@ -14,13 +14,16 @@
 #include "network/socket.hpp"
 #include "network/message.hpp"
 
+
 namespace Engine::Network::Server
 {
 
 	UDPServer::UDPServer(boost::asio::io_context &ioCtx, unsigned short port)
 		: _socket(ioCtx, udp::endpoint(udp::v4(), port))
+	{}
+
+	void UDPServer::setupConnection()
 	{
-		std::cout << "Contructed the socket" << std::endl;
 		this->listenForClients();
 	}
 
@@ -30,6 +33,7 @@ namespace Engine::Network::Server
 		using namespace boost::asio;
 
 		std::cout << "Listening for clients" << std::endl;
+		std::cout << "The socket is => " << _socket.is_open() << std::endl;
 		_socket.async_receive_from(buffer(_rcvBuff), _newRemoteEndpoint,
 				boost::bind(&UDPServer::acceptNewClient, this,
 					placeholders::error,
@@ -51,9 +55,7 @@ namespace Engine::Network::Server
 	{
 		std::cout << "Got a new connection" << std::endl;
 		if (err) {
-			std::cerr << "ERRORRRRR" << std::endl;
 			std::cerr << err.error_code::message() << std::endl;
-			std::cerr << size << std::endl;
 		}
 		std::cout.write(_rcvBuff.data(), 20);
 		_clients.push_back(_newRemoteEndpoint);

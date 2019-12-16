@@ -19,6 +19,9 @@ namespace Engine::Network
 	class NetworkContainer
 	{
 	public:
+		using Client = Engine::Network::Client::UDPClient;
+		using Server = Engine::Network::Server::UDPServer;
+
 		NetworkContainer() = delete;
 		~NetworkContainer();
 		NetworkContainer(World &world) : _world(world), _container(std::nullopt)
@@ -32,14 +35,12 @@ namespace Engine::Network
 	private:
 		void scheduleNetwork();
 
-		using Client = Engine::Network::Client::UDPClient;
-		using Server = Engine::Network::Server::UDPServer;
-
-			World &_world;
-			enum {CLOSED, SERVER, CLIENT} _connectionState = CLOSED;
-			std::optional<std::variant<Client, Server>> _container;
-			std::unique_ptr<std::thread> _thread = nullptr;
-			boost::asio::io_context _ioCtx;
+		World &_world;
+		enum {CLOSED, SERVER, CLIENT} _connectionState = CLOSED;
+		std::optional<std::reference_wrapper<IUDPNetwork>> _socketRef = std::nullopt;
+		std::optional<std::variant<Client, Server>> _container;
+		std::unique_ptr<std::thread> _thread = nullptr;
+		boost::asio::io_context _ioCtx;
 	};
 } /* Engine::Network */
 

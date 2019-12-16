@@ -22,12 +22,25 @@
 
 using boost::asio::ip::udp;
 
+namespace Engine::Network
+{
+	class IUDPNetwork
+	{
+	public:
+		IUDPNetwork() = default;
+		virtual ~IUDPNetwork() = default;
+
+		virtual void setupConnection() = 0;
+	};
+
+} /* Engine::Network */
+
 namespace Engine::Network::Server
 {
 	using Message = Engine::Network::Message;
 	class Client;
 
-	class UDPServer
+	class UDPServer : public IUDPNetwork
 	{
 	public:
 		UDPServer() = delete;
@@ -35,10 +48,11 @@ namespace Engine::Network::Server
 
 		void sendMsgToClient(Message const &msg, Client &client);
 		void pollClientsMsg();
+		void listenForClients();
+		void setupConnection() final;
 
 	private:
 
-		void listenForClients();
 		void acceptNewClient(boost::system::error_code const &err, size_t size);
 		void sendMsgCallback(Message msg, const boost::system::error_code &, size_t);
 		void rcvMsgCallback(const boost::system::error_code &, size_t);

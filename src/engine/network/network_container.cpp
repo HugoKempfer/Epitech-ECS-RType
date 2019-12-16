@@ -5,14 +5,15 @@
 ** System's embeded UDP socket
 */
 
+#include <variant>
 #include "network/network_system.hpp"
 
 namespace Engine::Network
 {
 		NetworkContainer::~NetworkContainer()
 		{
-			if (_thread != nullptr) {
-				_thread->join();
+			if (_connectionState != CLOSED) {
+				this->closeConnection();
 			}
 		}
 
@@ -28,6 +29,8 @@ namespace Engine::Network
 			}
 			_connectionState = CLIENT;
 			_container = Client(_ioCtx, host, port);
+			/* _socketRef = std::get<Server>(*_container); */
+			/* TODO: Un-comment when UDPclient implements IUDPNetwork */
 			_thread = std::make_unique<std::thread>(&NetworkContainer::scheduleNetwork, this);
 		}
 
@@ -38,26 +41,25 @@ namespace Engine::Network
 			}
 			_connectionState = SERVER;
 			_container = Server(_ioCtx, port);
+			_socketRef = std::get<Server>(*_container);
 			_thread = std::make_unique<std::thread>(&NetworkContainer::scheduleNetwork, this);
 		}
 
 		void NetworkContainer::closeConnection()
 		{
 			_connectionState = CLOSED;
+			_ioCtx.stop();
 			_thread->join();
 			_thread = nullptr;
 		}
 
 		void NetworkContainer::scheduleNetwork()
 		{
-			std::cout << "INSIED THREAD" << std::endl;
+			_socketRef->get().setupConnection();
 			while (_connectionState != CLOSED) {
-				std::cout << "run ioctx" << std::endl;
 				_ioCtx.run();
-				std::cout << "AFTER RUN" << std::endl;
 				_ioCtx.restart();
 			}
-			std::cout << "END OF THREAD" << std::endl;
 		}
 
 } /* Engine::Network */
