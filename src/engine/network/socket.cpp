@@ -1,5 +1,5 @@
 /*
-** EPITECH PROJECT, 2019
+** EPITECH PROJECT, 2d file descriptor019
 ** socket
 ** File description:
 ** Async UDP socket abstraction
@@ -20,6 +20,7 @@ namespace Engine::Network::Server
 	UDPServer::UDPServer(boost::asio::io_context &ioCtx, unsigned short port)
 		: _socket(ioCtx, udp::endpoint(udp::v4(), port))
 	{
+		std::cout << "Contructed the socket" << std::endl;
 		this->listenForClients();
 	}
 
@@ -49,7 +50,14 @@ namespace Engine::Network::Server
 	void UDPServer::acceptNewClient(boost::system::error_code const &err, size_t size)
 	{
 		std::cout << "Got a new connection" << std::endl;
+		if (err) {
+			std::cerr << "ERRORRRRR" << std::endl;
+			std::cerr << err.error_code::message() << std::endl;
+			std::cerr << size << std::endl;
+		}
+		std::cout.write(_rcvBuff.data(), 20);
 		_clients.push_back(_newRemoteEndpoint);
+		_rcvBuff.fill(0);
 		this->listenForClients();
 	}
 
@@ -98,17 +106,10 @@ namespace Engine::Network::Server
 
 namespace Engine::Network::Client
 {
-	UDPClient::UDPClient(boost::asio::io_context &ioCtx, unsigned short port)
-		: _resolver(ioCtx), _serverEndpoint(*_resolver.resolve(udp::v4(), "ip", "damn")),
+	UDPClient::UDPClient(boost::asio::io_context &ioCtx, std::string host, unsigned short port)
+		: _resolver(ioCtx), _serverEndpoint(*_resolver.resolve(udp::v4(), host, "damn")),
 		_socket(ioCtx)
-	{}
-
-	void UDPClient::connectTo(std::string const &host)
 	{
-		if (_serverEndpoint) {
-			throw std::runtime_error("A connection is already established");
-		}
-		_serverEndpoint = *_resolver.resolve(udp::v4(), host, "damn");
 		_socket.open(udp::v4());
 	}
 

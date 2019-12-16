@@ -77,12 +77,11 @@ namespace Engine::Network::Client
 	{
 	public:
 		UDPClient() = delete;
-		UDPClient(boost::asio::io_context &ioCtx, unsigned short port);
+		UDPClient(boost::asio::io_context &ioCtx, std::string host, unsigned short port);
 
-		void connectTo(std::string const &);
 	private:
 		udp::resolver _resolver;
-		std::optional<udp::endpoint> _serverEndpoint = std::nullopt;
+		udp::endpoint _serverEndpoint;
 		udp::socket _socket;
 	};
 
