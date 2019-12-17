@@ -23,6 +23,8 @@
 
 using boost::asio::ip::udp;
 
+namespace Engine { class World; }
+
 namespace Engine::Network
 {
 	class IUDPNetwork
@@ -66,7 +68,7 @@ namespace Engine::Network::Server
 	{
 	public:
 		UDPServer() = delete;
-		UDPServer(boost::asio::io_context &ioCtx, unsigned short port);
+		UDPServer(World &world, boost::asio::io_context &ioCtx, unsigned short port);
 
 		void sendMsgToClient(Message const &msg, Client &client);
 		void pollClientsMsg();
@@ -79,6 +81,7 @@ namespace Engine::Network::Server
 		void sendMsgCallback(Message msg, const boost::system::error_code &, size_t);
 		void rcvMsgCallback(const boost::system::error_code &, size_t);
 
+		World &_world;
 		udp::endpoint _newRemoteEndpoint;
 		int64_t _clientIdAI = 0;
 		std::unordered_map<int64_t, Client> _clients;
@@ -94,7 +97,7 @@ namespace Engine::Network::Client
 	{
 	public:
 		UDPClient() = delete;
-		UDPClient(boost::asio::io_context &ioCtx, std::string host, std::string port);
+		UDPClient(World &world, boost::asio::io_context &ioCtx, std::string host, std::string port);
 
 		void setupConnection() final;
 
@@ -102,6 +105,8 @@ namespace Engine::Network::Client
 		void listenServerMsg();
 		void rcvMsgCallback(const boost::system::error_code &, size_t);
 		void sendMsgCallback(Message msg, const boost::system::error_code &, size_t);
+
+		World &_world;
 		udp::resolver _resolver;
 		udp::endpoint _serverEndpoint;
 		udp::socket _socket;

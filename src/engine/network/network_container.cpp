@@ -44,7 +44,7 @@ namespace Engine::Network
 				throw std::runtime_error("Connection already opened");
 			}
 			_connectionState = CLIENT;
-			_container = Client(_ioCtx, host, port);
+			_container = std::make_unique<NetContainer>(Client(_world, _ioCtx, host, port));
 			_socketRef = std::get<Server>(*_container);
 			_thread = std::make_unique<std::thread>(&NetworkContainer::scheduleNetwork, this);
 		}
@@ -55,7 +55,7 @@ namespace Engine::Network
 				throw std::runtime_error("Connection already opened");
 			}
 			_connectionState = SERVER;
-			_container = Server(_ioCtx, port);
+			_container = std::make_unique<NetContainer>(Server(_world, _ioCtx, port));
 			_socketRef = std::get<Server>(*_container);
 			_thread = std::make_unique<std::thread>(&NetworkContainer::scheduleNetwork, this);
 		}
@@ -67,6 +67,7 @@ namespace Engine::Network
 			_thread->join();
 			_socketRef = std::nullopt;
 			_thread.reset(nullptr);
+			_container.reset(nullptr);
 		}
 
 		void NetworkContainer::scheduleNetwork()

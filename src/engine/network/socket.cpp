@@ -13,12 +13,13 @@
 
 #include "network/socket.hpp"
 #include "network/message.hpp"
+#include "network/network_events.hpp"
 
 namespace Engine::Network::Server
 {
 
-	UDPServer::UDPServer(boost::asio::io_context &ioCtx, unsigned short port)
-		: _socket(ioCtx, udp::endpoint(udp::v4(), port))
+	UDPServer::UDPServer(World &world, boost::asio::io_context &ioCtx, unsigned short port)
+		: _socket(ioCtx, udp::endpoint(udp::v4(), port)), _world(world)
 	{}
 
 	void UDPServer::setupConnection()
@@ -57,10 +58,11 @@ namespace Engine::Network::Server
 		if (err) {
 			std::cerr << err.error_code::message() << std::endl;
 		}
-		auto id = _clientIdAI++;
+		const auto id = _clientIdAI++;
 		std::cout.write(_rcvBuff.data(), 20);
 		_clients.insert({id, Client(id, _newRemoteEndpoint, *this)});
 		_rcvBuff.fill(0);
+		_world.eventsCtx.publish<ConnectionEvent>(_world, ConnectionEvent::CONNECTED, id);
 		this->listenForClients();
 	}
 
@@ -113,9 +115,9 @@ namespace Engine::Network::Server
 
 namespace Engine::Network::Client
 {
-	UDPClient::UDPClient(boost::asio::io_context &ioCtx, std::string host, std::string port)
+	UDPClient::UDPClient(World &world, boost::asio::io_context &ioCtx, std::string host, std::string port)
 		: _resolver(ioCtx), _serverEndpoint(*_resolver.resolve({udp::v4(), host, port})),
-		_socket(ioCtx)
+		_socket(ioCtx), _world(world)
 	{
 		_socket.open(udp::v4());
 	}

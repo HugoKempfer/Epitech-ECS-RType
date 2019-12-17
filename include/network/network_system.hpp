@@ -21,10 +21,11 @@ namespace Engine::Network
 	public:
 		using Client = Engine::Network::Client::UDPClient;
 		using Server = Engine::Network::Server::UDPServer;
+		using NetContainer = std::variant<Client, Server>;
 
 		NetworkContainer() = delete;
 		~NetworkContainer();
-		NetworkContainer(World &world) : _world(world), _container(std::nullopt)
+		NetworkContainer(World &world) : _world(world), _container(nullptr)
 		{}
 
 		bool isConnectionOpened() const;
@@ -40,7 +41,7 @@ namespace Engine::Network
 		World &_world;
 		enum {CLOSED, SERVER, CLIENT} _connectionState = CLOSED;
 		std::optional<std::reference_wrapper<IUDPNetwork>> _socketRef = std::nullopt;
-		std::optional<std::variant<Client, Server>> _container;
+		std::unique_ptr<NetContainer> _container;
 		std::unique_ptr<std::thread> _thread = nullptr;
 		boost::asio::io_context _ioCtx;
 	};
