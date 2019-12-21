@@ -17,3 +17,4 @@ graph_info.json
 conaninfo.txt
 .vscode/
 *.png
+doc/api
