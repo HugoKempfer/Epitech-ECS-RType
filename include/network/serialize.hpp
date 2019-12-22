@@ -25,6 +25,9 @@ namespace Engine::Network
 		std::is_default_constructible<S>::value &&
 		std::is_literal_type<S>::value;
 
+	/**
+	 * @brief Opaque type containing a serialized object
+	 */
 	template <typename UUID> requires std::is_enum<UUID>::value
 	class Archive
 	{
@@ -40,6 +43,11 @@ namespace Engine::Network
 
 		virtual ~Archive() = default;
 
+		/**
+		 * @brief Try to deserialize a class by providing a end type
+		 *
+		 * @return Deserialized version of the requested type
+		 */
 		template <typename T> requires serializable<T>
 		T decode()
 		{
@@ -65,6 +73,9 @@ namespace Engine::Network
 	};
 
 	template <typename UUID> requires std::is_enum<UUID>::value
+		/**
+		 * @brief Container which handle the (De)serialization for a set of class
+		 */
 	class SerializationFactory
 	{
 	public:
@@ -72,6 +83,11 @@ namespace Engine::Network
 		SerializationFactory(UUIDContext &ctx) : _uuidCtx(ctx) {}
 		~SerializationFactory() = default;
 
+		/**
+		 * @brief Give to the factory the capability of handling the provided class
+		 *
+		 * @param id POD-Class UUID obtained from world uuidCtx
+		 */
 		template <typename T> requires serializable<T>
 		void registerMember(UUID id)
 		{
@@ -83,6 +99,13 @@ namespace Engine::Network
 			_deserializeFrom.insert({id, {typeId, sizeof(T)}});
 		}
 
+		/**
+		 * @brief Serialize a registered class
+		 *
+		 * @param payload registered class
+		 *
+		 * @return Archive containing the serialized object
+		 */
 		template <typename T> requires serializable<T>
 		Archive<UUID> serialize(T const &payload) const
 		{

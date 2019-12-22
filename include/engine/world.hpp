@@ -32,6 +32,9 @@ namespace Engine {
 	template <typename T>
 	class Ressource;
 
+	/**
+	 * @brief root container for all game logic and data
+	 */
 	class World
 	{
 	public:
@@ -71,7 +74,9 @@ namespace Engine {
 		//Don't directly call this method => Deprecated
 		void removeComponent(Storable &);
 
-		//Launch the event loop
+		/**
+		 * @brief launch the event loop
+		 */
 		void run();
 
 		UUIDContext uuidCtx;

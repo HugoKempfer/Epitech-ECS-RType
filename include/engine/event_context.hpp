@@ -25,6 +25,9 @@ namespace Engine
 	class World;
 	class ISubscribe;
 
+	/**
+	 * @brief collect and dispatch events for a world instance
+	 */
 	class EventCtx
 	{
 	public:
@@ -59,6 +62,11 @@ namespace Engine
 			}
 		}
 
+		/**
+		 * @brief send an event to every listeners
+		 *
+		 * @param args fowarded ctor args
+		 */
 		template <typename E, typename ... Args> requires derived_from<E, Event<E>>
 		void publish(Args && ...args)
 		{

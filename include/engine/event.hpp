@@ -45,6 +45,7 @@ namespace Engine
 		{
 			world.eventsCtx.subscribe<E>(*this);
 		}
+
 		~EventHandler()
 		{
 			_eventWorld.eventsCtx.unSubscribe<E>(*this);

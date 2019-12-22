@@ -16,6 +16,9 @@ namespace Engine { class World; }
 
 namespace Engine::Network
 {
+	/**
+	 * @brief network abstraction for UDP server/client
+	 */
 	class NetworkContainer
 	{
 	public:
@@ -29,10 +32,38 @@ namespace Engine::Network
 		{}
 
 		bool isConnectionOpened() const;
+		/**
+		 * @brief Connect to a distant server
+		 *
+		 * @param host server ipv4
+		 * @param port server port
+		 */
 		void openAsClient(std::string &host, std::string port);
+
+		/**
+		 * @brief Open a connection and listen for clients
+		 *
+		 * @param port port to bind the service
+		 */
 		void openAsServer(unsigned short port);
+
+		/**
+		 * @brief Close the active connection and reset the network
+		 */
 		void closeConnection();
+
+		/**
+		 * @brief Access the server instance
+		 *
+		 * @return Server instance reference
+		 */
 		Server &getAsServer();
+
+		/**
+		 * @brief Access the client instance
+		 *
+		 * @return Client instance reference
+		 */
 		Client &getAsClient();
 
 	private:

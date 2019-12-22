@@ -33,23 +33,10 @@ namespace Engine::Network::Server
 		using namespace boost::asio;
 
 		std::cout << "Listening for clients" << std::endl;
-		std::cout << "The socket is => " << _socket.is_open() << std::endl;
 		_socket.async_receive_from(buffer(_rcvBuff), _newRemoteEndpoint,
 				boost::bind(&UDPServer::acceptNewClient, this,
 					placeholders::error,
 					placeholders::bytes_transferred));
-	}
-
-	void UDPServer::pollClientsMsg()
-	{
-		for (auto &client : _clients) {
-			_socket.async_receive_from(boost::asio::buffer(_rcvBuff),
-					client.second._endpoint,
-					boost::bind(&UDPServer::rcvMsgCallback,
-						this,
-						boost::asio::placeholders::error,
-						boost::asio::placeholders::bytes_transferred));
-		}
 	}
 
 	void UDPServer::acceptNewClient(boost::system::error_code const &err, size_t size)
@@ -60,28 +47,54 @@ namespace Engine::Network::Server
 		}
 		const auto id = _clientIdAI++;
 		std::cout.write(_rcvBuff.data(), 20);
-		_clients.insert({id, Client(id, _newRemoteEndpoint, *this)});
+		auto &client = _clients.insert({id, Server::Client(id, _newRemoteEndpoint, _socket)})
+			.first->second;
 		_rcvBuff.fill(0);
 		_world.eventsCtx.publish<ConnectionEvent>(_world, ConnectionEvent::CONNECTED, id);
 		this->listenForClients();
 	}
 
 
-	void UDPServer::sendMsgToClient(const Message &msg, Client &client)
+
+	void Client::listenForMsg()
+	{
+		_socket.async_receive_from(
+				boost::asio::buffer(_rcvBuff),
+				_endpoint,
+				boost::bind(&Client::rcvMsgCallback,
+					this,
+					boost::asio::placeholders::error,
+					boost::asio::placeholders::bytes_transferred));
+	}
+
+	void Client::doSendMsg(Message msg)
 	{
 		auto buff = std::make_shared<std::vector<std::byte>>(msg.getMessageBuffer());
 
 		_socket.async_send_to(boost::asio::buffer(*buff),
-				client._endpoint,
+				_endpoint,
 				boost::bind(
-					&UDPServer::sendMsgCallback,
+					&Client::sendMsgCallback,
 					this,
 					msg,
 					boost::asio::placeholders::error,
 					boost::asio::placeholders::bytes_transferred));
 	}
 
-	void UDPServer::sendMsgCallback(Message msg, const boost::system::error_code &err, size_t size)
+	std::optional<Message> Client::pollMsg()
+	{
+		if (!_incomingMsg.size()) {
+			return {std::nullopt};
+		}
+		{
+			std::lock_guard<std::mutex> msgProcess(_msgMutex);
+			auto msg = std::make_optional<Message>(_incomingMsg.front());
+			_incomingMsg.pop();
+			return msg;
+		}
+	}
+
+	void Client::sendMsgCallback(Message msg, const boost::system::error_code &err, size_t size)
 	{
 		/* TODO: Handle err */
 		std::cout << "Message sent" << std::endl;
@@ -90,25 +103,24 @@ namespace Engine::Network::Server
 		}
 	}
 
-	void UDPServer::rcvMsgCallback(const boost::system::error_code &err, size_t size)
+	void Client::rcvMsgCallback(const boost::system::error_code &err, size_t size)
 	{
+		Message msg;
+		MessageHeader *hdr = reinterpret_cast<MessageHeader *>(_rcvBuff.c_array());
 		std::cout << "Received a message" << std::endl;
-		/* TODO: Process received message */
-	}
-
-	void Client::dispatchMessages()
-	{
-		while (_outgoingMsg.size()) {
-			auto &msg = _outgoingMsg.front();
-			_server.sendMsgToClient(msg, *this);
-			_outgoingMsg.pop();
+		std::cout << "Lenght => " << hdr->payloadSize << std::endl;
+		if (sizeof(MessageHeader) + hdr->payloadSize != size) {
+			std::cerr << "SIZE MISMATCH" << std::endl;
 		}
-	}
-
-	void Client::doSendMsg(Message msg)
-	{
-		_outgoingMsg.push(msg);
-		this->dispatchMessages();
+		msg.header = *hdr;
+		for (auto it = sizeof(MessageHeader); it < hdr->payloadSize; ++it) {
+			msg.payload.push_back(static_cast<std::byte>(_rcvBuff.at(it)));
+		}
+		{
+			std::lock_guard<std::mutex> msgLock(_msgMutex);
+			_incomingMsg.push(msg);
+		}
+		this->listenForMsg();
 	}
 
 } /* Engine::Network::Server */
@@ -118,9 +130,9 @@ namespace Engine::Network::Client
 	UDPClient::UDPClient(World &world, boost::asio::io_context &ioCtx, std::string host, std::string port)
 		: _resolver(ioCtx), _serverEndpoint(*_resolver.resolve({udp::v4(), host, port})),
 		_socket(ioCtx), _world(world)
-	{
-		_socket.open(udp::v4());
-	}
+		{
+			_socket.open(udp::v4());
+		}
 
 	void UDPClient::setupConnection()
 	{
@@ -143,9 +155,12 @@ namespace Engine::Network::Client
 		this->listenServerMsg();
 	}
 
-	void UDPClient::sendMsgCallback(Message msg, const boost::system::error_code &, size_t)
+	void UDPClient::sendMsgCallback(Message msg, const boost::system::error_code &err, size_t)
 	{
 		/* TODO: Handle server msg send */
+		if (err) {
+			std::cerr << "Error while sending a message" << std::endl;
+		}
 	}
 
 } /* Engine::Network::Client */
