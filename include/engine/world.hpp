@@ -11,6 +11,8 @@
 #include <unordered_map>
 #include <vector>
 #include <memory>
+#include <functional>
+
 #include "definitions.hpp"
 #include "game_storage.hpp"
 #include "concepts_impl.hpp"
@@ -20,6 +22,7 @@
 #include "dispatcher.hpp"
 #include "event_context.hpp"
 #include "bundle.hpp"
+#include "network/network_system.hpp"
 
 namespace Engine {
 
@@ -29,6 +32,9 @@ namespace Engine {
 	template <typename T>
 	class Ressource;
 
+	/**
+	 * @brief root container for all game logic and data
+	 */
 	class World
 	{
 	public:
@@ -68,7 +74,9 @@ namespace Engine {
 		//Don't directly call this method => Deprecated
 		void removeComponent(Storable &);
 
-		//Launch the event loop
+		/**
+		 * @brief launch the event loop
+		 */
 		void run();
 
 		UUIDContext uuidCtx;
@@ -76,6 +84,7 @@ namespace Engine {
 
 		EntityStorage entities;
 		StateMachine states;
+		Network::NetworkContainer network;
 
 	private:
 		void processSystemRegistration(std::unique_ptr<System> &);

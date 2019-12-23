@@ -6,8 +6,10 @@
 */
 
 #include <iostream>
-#include <SFML/Window.hpp>
 #include <memory>
+
+#include <SFML/Window.hpp>
+
 #include "engine/prelude.hpp"
 #include "render/window.hpp"
 #include "render/events.hpp"

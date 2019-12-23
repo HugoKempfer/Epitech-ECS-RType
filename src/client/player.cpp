@@ -8,12 +8,33 @@
 #include "client/player.hpp"
 #include "render/events.hpp"
 #include "engine/built_in/position.hpp"
-#include "render/sprite_component.hpp"
 #include "client/bullet.hpp"
 
 void PlayerSystem::run()
 {
 	this->handleMoves();
+}
+
+void PlayerSystem::adjustPositionToWindowBounds(Engine::PositionComponent &player_pos) {
+
+	const auto window_size = this->getRessource<Window>().window.getSize();
+	const auto &sprite_component = _world.entities.query(*this).with<PlayerComponent>()
+		.with<Engine::Render::SpriteComponent>()
+		.getIntersection()[0]
+		.getComponent<Engine::Render::SpriteComponent>();
+
+	if (player_pos.pos_y < 0) {
+		player_pos.pos_y = 0;
+	}
+	if (player_pos.pos_x < 0) {
+		player_pos.pos_x = 0;
+	}
+	if (player_pos.pos_y > (window_size.y - sprite_component.height)) {
+		player_pos.pos_y = window_size.y - sprite_component.height;
+	}
+	if (player_pos.pos_x > (window_size.x - sprite_component.width)) {
+		player_pos.pos_x = window_size.x - sprite_component.width;
+	}
 }
 
 void PlayerSystem::handleMoves()
@@ -34,6 +55,7 @@ void PlayerSystem::handleMoves()
 	if (_arrows[RIGHT]) {
 		player_pos.pos_x += MOVE_SPEED;
 	}
+	this->adjustPositionToWindowBounds(player_pos);
 }
 
 void PlayerSystem::shoot()

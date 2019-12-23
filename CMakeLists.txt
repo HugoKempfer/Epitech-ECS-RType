@@ -15,6 +15,8 @@ set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 add_definitions("-fPIC")
 add_definitions("-fconcepts")
 
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -pthread")
+
 include(${CMAKE_BINARY_DIR}/conanbuildinfo.cmake)
 conan_basic_setup()
 
@@ -25,6 +27,8 @@ file(GLOB_RECURSE ENGINE "src/engine/core/*.cpp")
 
 file(GLOB_RECURSE ENGINE_RENDER "src/engine/render/*.cpp")
 
+file(GLOB_RECURSE ENGINE_NETWORK "src/engine/network/*.cpp")
+
 file(GLOB_RECURSE SERVER "src/server/*.cpp")
 
 file(GLOB_RECURSE CLIENT "src/client/*.cpp")
@@ -33,7 +37,7 @@ file(GLOB_RECURSE TEST_ENGINE "tests/engine/*.cpp")
 
 file(GLOB_RECURSE TEST_RENDER "tests/render/*.cpp")
 
-add_library(engine STATIC ${ENGINE})
+add_library(engine STATIC ${ENGINE} ${ENGINE_NETWORK})
 add_library(engine_render STATIC ${ENGINE_RENDER})
 
 add_executable(r-type_server ${SERVER})
@@ -52,9 +56,15 @@ add_test(engine bin/engine_test)
 add_test(render bin/render_test)
 
 
-if (DEFINED ENV{RTYPE_DEBUG})
+if (DEFINED ENV{RTYPE_ASAN})
 		set(CMAKE_BUILD_TYPE Debug)
 		add_definitions("-Wall -Wextra -fipa-pure-const
 		-Wsuggest-attribute=const")
 		set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fsanitize=address -fsanitize=leak -g")
+endif()
+if (DEFINED ENV{RTYPE_DEBUG})
+		set(CMAKE_BUILD_TYPE Debug)
+		add_definitions("-Wall -Wextra -fipa-pure-const
+		-Wsuggest-attribute=const")
+		set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -g")
 endif()
