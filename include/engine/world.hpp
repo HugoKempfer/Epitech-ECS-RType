@@ -22,7 +22,7 @@
 #include "dispatcher.hpp"
 #include "event_context.hpp"
 #include "bundle.hpp"
-#include "network/network_system.hpp"
+#include "network/network_container.hpp"
 
 namespace Engine {
 

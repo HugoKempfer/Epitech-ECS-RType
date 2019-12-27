@@ -6,7 +6,7 @@
 */
 
 #include <variant>
-#include "network/network_system.hpp"
+#include "network/network_container.hpp"
 
 namespace Engine::Network
 {

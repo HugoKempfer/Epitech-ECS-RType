@@ -25,4 +25,10 @@ concept constructible_from = destructible<T> && std::is_constructible_v<T, Args.
 template<class T>
 concept default_constructible = constructible_from<T>;
 
+template <typename S>
+concept serializable =
+	std::is_pod<S>::value &&
+	std::is_default_constructible<S>::value &&
+	std::is_literal_type<S>::value;
+
 #endif /* end of include guard: CONCEPTS_IMPL_HPP_UMAVAPWQ */

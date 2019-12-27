@@ -54,7 +54,12 @@ namespace Engine::Network::Server
 		this->listenForClients();
 	}
 
-
+	void UDPServer::broadcastMsg(Message &msg)
+	{
+		for (auto &client : _clients) {
+			client.second.doSendMsg(msg);
+		}
+	}
 
 	void Client::listenForMsg()
 	{

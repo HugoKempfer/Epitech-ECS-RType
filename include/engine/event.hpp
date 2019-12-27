@@ -37,6 +37,15 @@ namespace Engine
 		Event(UUIDContext &uuidCtx) : Storable(uuidCtx, uuidCtx.get<T>()) {}
 	};
 
+	template <typename T> requires serializable<T>
+	class NetworkEvent : Event<NetworkEvent<T>>
+	{
+	public:
+		NetworkEvent(UUIDContext &uuidCtx, T payload) : Event<NetworkEvent<T>>(uuidCtx), payload(payload) {}
+
+		const T payload;
+	};
+
 	template <typename E> requires derived_from<E, Event<E>>
 	class EventHandler : ISubscribe {
 	public:

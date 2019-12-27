@@ -11,6 +11,7 @@
 #include "engine/prelude.hpp"
 #include "render/events.hpp"
 #include "engine/built_in/position.hpp"
+#include "engine/world.hpp"
 
 using Engine::Component;
 using Engine::World;
@@ -33,8 +34,7 @@ public:
 	PlayerSystem(World &world) : System(world,
 			{world.uuidCtx.get<PlayerComponent>(),
 			world.uuidCtx.get<Engine::PositionComponent>()
-			},
-			{}),
+			}, {}),
 		EventHandler<KeystrokeEvent>(world)
 		{}
 

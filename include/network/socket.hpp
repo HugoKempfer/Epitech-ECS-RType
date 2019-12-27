@@ -62,9 +62,9 @@ namespace Engine::Network::Server
 		void doSendMsg(Message msg);
 
 		/**
-		 * @brief Tru to get one client Message
+		 * @brief Try to get one client Message
 		 *
-		 * @return Monad holding a potentiel Client Message
+		 * @return Monad holding a potential Client Message
 		 */
 		std::optional<Message> pollMsg();
 
@@ -90,12 +90,18 @@ namespace Engine::Network::Server
 	class UDPServer : public IUDPNetwork
 	{
 	public:
+		using ClientStorage = std::unordered_map<int64_t, Client>;
 		UDPServer() = delete;
 		UDPServer(World &world, boost::asio::io_context &ioCtx, unsigned short port);
 
 		void listenForClients();
 		void setupConnection() final;
 		Client &getClient(int64_t id) { return _clients.at(id); }
+		void broadcastMsg(Message &);
+		std::pair<ClientStorage::iterator, ClientStorage::iterator> getClients() noexcept
+		{
+			return {_clients.begin(), _clients.end()};
+		}
 
 	private:
 		void acceptNewClient(boost::system::error_code const &err, size_t size);
@@ -103,7 +109,7 @@ namespace Engine::Network::Server
 		World &_world;
 		udp::endpoint _newRemoteEndpoint;
 		int64_t _clientIdAI = 0;
-		std::unordered_map<int64_t, Client> _clients;
+		ClientStorage _clients;
 		boost::array<char, USHRT_MAX> _rcvBuff;
 		udp::socket _socket;
 	};

@@ -76,8 +76,7 @@ Test(Components, intersectionQuery)
 					world.uuidCtx.get<Component2>(),
 					world.uuidCtx.get<Component1>()
 					}
-				},
-				{})
+				}, {})
 		{}
 
 		void run() final
