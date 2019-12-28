@@ -15,9 +15,9 @@
 #include "render/events.hpp"
 #include "render/sprite_component.hpp"
 #include "render/bundles.hpp"
-#include "engine/built_in/position.hpp"
-#include "client/player.hpp"
-#include "client/bullet.hpp"
+#include "engine/built_in/component/position.hpp"
+#include "r-type/system/player.hpp"
+#include "r-type/system/bullet.hpp"
 
 void test_engine();
 void damn();

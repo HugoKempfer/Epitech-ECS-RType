@@ -2,29 +2,24 @@
 ** EPITECH PROJECT, 2019
 ** player
 ** File description:
-** Representation of a player
+** Representation of a player system
 */
 
-#ifndef PLAYER_HPP_CQVWA8K6
-#define PLAYER_HPP_CQVWA8K6
+#ifndef PLAYER_HPP_4DPEQCJA
+#define PLAYER_HPP_4DPEQCJA
+
 
 #include "engine/prelude.hpp"
 #include "render/events.hpp"
-#include "engine/built_in/position.hpp"
 #include "render/ressources.hpp"
 #include "render/sprite_component.hpp"
+#include "engine/built_in/component/position.hpp"
+#include "r-type/component/player.hpp"
 
 using Engine::Component;
-using Engine::World;
+using Engine::System;
 using Engine::EventHandler;
 using Engine::Render::KeystrokeEvent;
-
-struct PlayerComponent : public Component<PlayerComponent>
-{
-	PlayerComponent() = delete;
-	PlayerComponent(World &world) : Component<PlayerComponent>(world) {}
-	~PlayerComponent() = default;
-};
 
 class PlayerSystem :
 	public Engine::System,
@@ -57,4 +52,6 @@ private:
 	const float MOVE_SPEED = 8;
 };
 
-#endif /* end of include guard: PLAYER_HPP_CQVWA8K6 */
+
+
+#endif /* end of include guard: PLAYER_HPP_4DPEQCJA */

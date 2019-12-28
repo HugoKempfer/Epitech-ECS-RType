@@ -60,7 +60,7 @@ The events are a unidirectional way to do message passing between systems and st
 
 You create your own event by inheriting the `Engine::Event<YourClass>`.
 
-You can *publish* events from anywhere in your program using `world.eventCtx.publish<EventType>(ctor args).
+You can *publish* events from anywhere in your program using `world.eventCtx.publish<EventType>(ctor args).`
 
 Every `System` or `State` which implements `Engine::EventHandler<EventType>` will receive the published event.
 

@@ -5,7 +5,8 @@
 ** Representation of a laser shot
 */
 
-#include "client/bullet.hpp"
+#include "r-type/component/bullet.hpp"
+#include "r-type/system/bullet.hpp"
 
 void BulletSystem::run()
 {

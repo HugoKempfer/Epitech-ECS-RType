@@ -5,26 +5,14 @@
 ** Representation of a laser shot
 */
 
-#ifndef BULLET_HPP_ELMYUOBS
-#define BULLET_HPP_ELMYUOBS
+#ifndef BULLET_HPP_NY9CUXLE
+#define BULLET_HPP_NY9CUXLE
+
 
 #include "engine/prelude.hpp"
-#include "engine/built_in/position.hpp"
+#include "engine/built_in/component/position.hpp"
 #include "render/ressources.hpp"
-
-class BulletComponent : public Engine::Component<BulletComponent>
-{
-public:
-	enum Direction {LEFT, RIGHT};
-	BulletComponent() = delete;
-	BulletComponent(World &world, Direction direction) :
-		Engine::Component<BulletComponent>(world),
-		direction(direction)
-	{}
-	virtual ~BulletComponent() = default;
-
-	Direction direction;
-};
+#include "r-type/component/bullet.hpp"
 
 class BulletSystem : public Engine::System
 {
@@ -48,4 +36,4 @@ private:
 	void processMoves();
 };
 
-#endif /* end of include guard: BULLET_HPP_ELMYUOBS */
+#endif /* end of include guard: BULLET_HPP_NY9CUXLE */

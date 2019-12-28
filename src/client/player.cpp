@@ -5,10 +5,12 @@
 ** Player managament
 */
 
-#include "client/player.hpp"
+#include "r-type/component/player.hpp"
+#include "r-type/system/player.hpp"
 #include "render/events.hpp"
-#include "engine/built_in/position.hpp"
-#include "client/bullet.hpp"
+#include "engine/built_in/component/position.hpp"
+#include "render/sprite_component.hpp"
+#include "r-type/component/bullet.hpp"
 
 void PlayerSystem::run()
 {

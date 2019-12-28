@@ -17,7 +17,7 @@
 #include "engine/event.hpp"
 #include "render/ressources.hpp"
 #include "render/sprite_component.hpp"
-#include "engine/built_in/position.hpp"
+#include "engine/built_in/component/position.hpp"
 #include "engine/query.hpp"
 
 namespace Engine::Render
