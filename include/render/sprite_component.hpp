@@ -16,21 +16,40 @@ namespace Engine::Render
 	{
 	public:
 		SpriteComponent() = delete;
-		SpriteComponent(World &world, std::string texturePath, int height, int width, int framesNb = 1) :
+		SpriteComponent(World &world, std::string texturePath, int height, int width, int framesNb = 1, int zIndex = highestDepth) :
 			Component<SpriteComponent>(world),
 			texturePath(texturePath),
 			height(height),
 			width(width),
-			framesNb(framesNb)
-		{}
+			framesNb(framesNb),
+			zIndex(zIndex)
+		{
+			if (zIndex > SpriteComponent::highestDepth) {
+				highestDepth = zIndex + 1;
+			}
+		}
 		virtual ~SpriteComponent() = default;
+		SpriteComponent &operator=(const SpriteComponent &other) {
+			texturePath = std::string(other.texturePath);
+			isVisible = other.isVisible;
+			height = other.height;
+			width = other.width;
+			framesNb = other.framesNb;
+			currentFrame = other.currentFrame;
+			highestDepth = other.highestDepth;
+			zIndex = other.zIndex;
 
-		const std::string texturePath;
+			return *this;
+		}
+
+		std::string texturePath;
 		bool isVisible = true;
 		int height;
 		int width;
-		const int framesNb;
+		int framesNb;
 		int currentFrame = 1;
+		static int highestDepth;
+		int zIndex = 0;
 	};
 
 } /* Engine::Render */

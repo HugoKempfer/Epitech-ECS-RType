@@ -23,6 +23,13 @@ namespace Engine
 		{}
 		~PositionComponent() = default;
 
+		PositionComponent &operator=(const PositionComponent &other) {
+			pos_x = other.pos_x;
+			pos_y = other.pos_y;
+
+			return *this;
+		}
+
 		float pos_x;
 		float pos_y;
 	};

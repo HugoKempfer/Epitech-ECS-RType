@@ -29,5 +29,5 @@ void MapSystem::onStart()
 
 	_world.entities.add().addComponent<MapComponent>(_world)
 		.addComponent<Engine::PositionComponent>(_world)
-		.addComponent<Engine::Render::SpriteComponent>(_world, "../assets/1288_gamemap1.png", window_size.y, window_size.x);
+		.addComponent<Engine::Render::SpriteComponent>(_world, "../assets/level_1_part_1.png", window_size.y, window_size.x, 1);
 }

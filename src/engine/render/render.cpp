@@ -4,6 +4,10 @@
 #include "render/ressources.hpp"
 #include "engine/system.hpp"
 #include "engine/query.hpp"
+#include <algorithm>
+#include <functional>
+#include <array>
+#include <iostream>
 
 void damn()
 {
@@ -12,26 +16,44 @@ void damn()
 
 namespace Engine::Render
 {
+
+	/*template <class T> void swap (T& a, T& b)
+	{
+		T c(std::move(a)); a=std::move(b); b=std::move(c);
+	}*/
+
 	void RenderSystem::run()
 	{
+		std::vector<ToRender> entity_vec;
+
 		auto entities = _world.entities.query(*this)
 			.with<PositionComponent>()
 			.with<SpriteComponent>().getIntersection();
 		auto &window = this->getRessource<WindowRessource>().window;
 
-		window.clear(sf::Color::Black);
 		for (auto &entity : entities) {
-			if (entity.getComponent<SpriteComponent>().isVisible) {
-				window.draw(this->getSprite(entity));
+			ToRender entityToSort = ToRender(entity.getComponent<PositionComponent>(), entity.getComponent<SpriteComponent>());
+			entity_vec.push_back(entityToSort);
+		}
+
+		// ensure that entities are rendered with respect to their zIndex
+		std::sort(entity_vec.begin(), entity_vec.end(), [](ToRender &entityA, ToRender &entityB) {
+		  return entityA.sprite.zIndex < entityB.sprite.zIndex;
+		  });
+
+		window.clear(sf::Color::Black);
+		for (auto &sorted_entity : entity_vec) {
+			if (sorted_entity.sprite.isVisible) {
+				window.draw(this->getSprite(sorted_entity));
 			}
 		}
 		window.display();
 	}
 
-	sf::Sprite &RenderSystem::processSprite(MatchedEntity &entity, sf::Sprite &sprite)
+	sf::Sprite &RenderSystem::processSprite(ToRender &entity, sf::Sprite &sprite)
 	{
-		const auto &position = entity.getComponent<PositionComponent>();
-		auto &spriteComp = entity.getComponent<SpriteComponent>();
+		const auto &position = entity.pos;
+		auto &spriteComp = entity.sprite;
 
 		sprite.setPosition({position.pos_x, position.pos_y});
 		if (spriteComp.framesNb > 1) {
@@ -49,9 +71,9 @@ namespace Engine::Render
 		return sprite;
 	}
 
-	sf::Sprite &RenderSystem::getSprite(MatchedEntity &entity)
+	sf::Sprite &RenderSystem::getSprite(ToRender &entity)
 	{
-		const auto &path = entity.getComponent<SpriteComponent>().texturePath;
+		const auto &path = entity.sprite.texturePath;
 		if (!_sprites.contains(path)) {
 			_textures.insert({path, sf::Texture()});
 			auto &tex = _textures.at(path);

@@ -45,7 +45,7 @@ public:
 	//void handle(KeystrokeEvent const &) final;
 
 private:
-	const float MOVE_SPEED = 2;
+	const float MOVE_SPEED = 3;
 };
 
 #endif /* end of include guard: MAP_HPP_JUGTEIMN */

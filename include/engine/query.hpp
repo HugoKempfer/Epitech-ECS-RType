@@ -28,6 +28,16 @@ namespace Engine
 		_components(components)
 		{}
 
+		/*MatchedEntity(MatchedEntity const &old) : entity(old.entity),
+		_uuidCtx(old._uuidCtx),
+		_components(old._components) {}
+
+		MatchedEntity &operator=(const MatchedEntity &other) {
+			entity = other.entity;
+			_uuidCtx = other._uuidCtx;
+			_components = other._components;
+			return *this;
+		}*/
 		template <typename C> requires derived_from<C, Component<C>>
 		C &getComponent()
 		{
@@ -36,7 +46,7 @@ namespace Engine
 			return component.cast<C &>();
 		}
 
-		const Entity & entity;
+		const Entity & entity; // is functionally const
 	private:
 		UUIDContext &_uuidCtx;
 		EntityComponents _components;
