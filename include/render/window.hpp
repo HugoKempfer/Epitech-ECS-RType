@@ -54,6 +54,21 @@ namespace Engine::Render
 		const int _width;
 	};
 
+	struct ToRender {
+		ToRender(PositionComponent &pos, SpriteComponent &sprite) :
+			pos(pos), sprite(sprite)
+		{}
+		ToRender(ToRender const &other) : pos(other.pos), sprite(other.sprite) {}
+
+		void operator=(const ToRender &other) {
+			pos = other.pos;
+			sprite = other.sprite;
+		}
+
+		PositionComponent &pos;
+		SpriteComponent &sprite;
+	};
+
 	class RenderSystem : public System
 	{
 	public:
@@ -70,8 +85,8 @@ namespace Engine::Render
 		void run() override;
 
 	private:
-		sf::Sprite &getSprite(MatchedEntity &);
-		sf::Sprite &processSprite(MatchedEntity &, sf::Sprite &);
+		sf::Sprite &getSprite(ToRender &);
+		sf::Sprite &processSprite(ToRender &, sf::Sprite &);
 
 		std::unordered_map<std::string, sf::Sprite> _sprites;
 		std::unordered_map<std::string, sf::Texture> _textures;

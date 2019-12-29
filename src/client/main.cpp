@@ -18,6 +18,7 @@
 #include "engine/built_in/component/position.hpp"
 #include "r-type/system/player.hpp"
 #include "r-type/system/bullet.hpp"
+#include "r-type/system/map.hpp"
 
 void test_engine();
 void damn();
@@ -45,10 +46,11 @@ int main([[maybe_unused]]int argc, [[maybe_unused]]char *argv[])
 {
 	World world;
 
-	world.states.push<InitState>(world);
 	world.useBundle<RenderBundle>();
 	world.registerSystem<PlayerSystem>(world);
 	world.registerSystem<BulletSystem>(world);
+	world.registerSystem<MapSystem>(world);
+	world.states.push<InitState>(world);
 	world.run();
 	return 0;
 }
