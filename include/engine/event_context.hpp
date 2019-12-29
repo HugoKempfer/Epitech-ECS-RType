@@ -16,7 +16,6 @@
 #include "storable.hpp"
 #include "concepts_impl.hpp"
 #include "uuid.hpp"
-#include "network/network_container.hpp"
 
 namespace Engine
 {

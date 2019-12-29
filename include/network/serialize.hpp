@@ -18,6 +18,7 @@
 
 #include "engine/concepts_impl.hpp"
 #include "engine/uuid.hpp"
+#include "network/socket.hpp"
 
 namespace Engine::Network
 {
@@ -35,6 +36,12 @@ namespace Engine::Network
 			typeUUID(uuid), size(size)
 		{
 			this->encode(payload);
+		}
+
+		Archive(Engine::Network::Message &msg) :
+			typeUUID(msg.header.type), size(msg.header.payloadSize)
+		{
+			this->encode(msg.payload.data());
 		}
 
 		virtual ~Archive() = default;
@@ -113,7 +120,6 @@ namespace Engine::Network
 				throw std::runtime_error("Requested type not handled by factory");
 			}
 		}
-
 
 		int64_t getArchiveTypeUUID(Archive<UUID> const &ar) const
 		{

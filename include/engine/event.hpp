@@ -13,6 +13,7 @@
 #include <memory>
 #include <vector>
 #include <unordered_map>
+#include <type_traits>
 #include "storable.hpp"
 #include "concepts_impl.hpp"
 #include "uuid.hpp"
@@ -37,13 +38,12 @@ namespace Engine
 		Event(UUIDContext &uuidCtx) : Storable(uuidCtx, uuidCtx.get<T>()) {}
 	};
 
-	template <typename T> requires serializable<T>
-	class NetworkEvent : Event<NetworkEvent<T>>
+	template <typename UUID> requires std::is_enum<UUID>::value
+	class NetworkEvent : Event<NetworkEvent<UUID>>
 	{
 	public:
-		NetworkEvent(UUIDContext &uuidCtx, T payload) : Event<NetworkEvent<T>>(uuidCtx), payload(payload) {}
-
-		const T payload;
+		NetworkEvent(UUIDContext &uuidCtx) : Event<NetworkEvent<UUID>>(uuidCtx) {}
+		/* TODO: put the archive containing the end object */
 	};
 
 	template <typename E> requires derived_from<E, Event<E>>

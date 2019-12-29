@@ -10,20 +10,11 @@
 
 namespace Engine::Network
 {
-	void MessageDispatcherSystem::dispatchMessage(Server::Client &client)
+	template <typename UUID>
+	void MessageDispatcherSystem<UUID>::dispatchMessage(Server::Client &client)
 	{
-		while (client.pollMsg()) {
-			/* TODO: Dispatch message */
+		while (auto message = client.pollMsg()) {
+			Archive<UUID> ar(message);
 		}
-	}
-	void MessageDispatcherSystem::run() {
-		if (!_world.network.isConnectionOpened()) {
-			return;
-		}
-		auto clients = _world.network.getAsServer().getClients();
-		for (auto &client = clients.first; client != clients.second; ++client) {
-			this->dispatchMessage(client->second);
-		}
-
 	}
 } /* Engine::Network */

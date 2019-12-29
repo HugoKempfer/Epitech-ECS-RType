@@ -8,7 +8,6 @@
 #include <iostream>
 
 #include "engine/prelude.hpp"
-#include "network/network_system.hpp"
 #include "network/message.hpp"
 #include "network/socket.hpp"
 
@@ -18,10 +17,14 @@ public:
 	DamnState() = delete;
 	DamnState(World &world) : State<DamnState>(world) {}
 	~DamnState() = default;
-
+	/*! \enum Damn
+	 *
+	 *  enum made for server connection
+	 */
+	enum Damn { DAMN, WOW };
 	void onStart() final
 	{
-		_world.network.openAsServer(12343);
+		_world.network.openAsServer<Damn>(12343);
 	}
 
 	void onUpdate() final
