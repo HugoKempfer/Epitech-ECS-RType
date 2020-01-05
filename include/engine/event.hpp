@@ -42,8 +42,11 @@ namespace Engine
 	class NetworkEvent : Event<NetworkEvent<UUID>>
 	{
 	public:
-		NetworkEvent(UUIDContext &uuidCtx) : Event<NetworkEvent<UUID>>(uuidCtx) {}
-		/* TODO: put the archive containing the end object */
+		NetworkEvent(UUIDContext &uuidCtx, int64_t id) :
+			Event<NetworkEvent<UUID>>(uuidCtx), typeUUID(id) {}
+
+		const int64_t typeUUID;
+		Network::Archive<UUID> ar;
 	};
 
 	template <typename E> requires derived_from<E, Event<E>>

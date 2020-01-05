@@ -18,8 +18,9 @@
 namespace Engine::Network::Server
 {
 
-	UDPServer::UDPServer(World &world, boost::asio::io_context &ioCtx, unsigned short port)
-		: _socket(ioCtx, udp::endpoint(udp::v4(), port)), _world(world)
+	UDPServer::UDPServer(World &world, boost::asio::io_context &ioCtx,
+			unsigned short port, RessourceStorage &ressources)
+		: _socket(ioCtx, udp::endpoint(udp::v4(), port)), _world(world), _ressources(ressources)
 	{}
 
 	void UDPServer::setupConnection()
@@ -132,9 +133,10 @@ namespace Engine::Network::Server
 
 namespace Engine::Network::Client
 {
-	UDPClient::UDPClient(World &world, boost::asio::io_context &ioCtx, std::string host, std::string port)
+	UDPClient::UDPClient(World &world, boost::asio::io_context &ioCtx,
+			std::string host, std::string port, RessourceStorage &ressources)
 		: _resolver(ioCtx), _serverEndpoint(*_resolver.resolve({udp::v4(), host, port})),
-		_socket(ioCtx), _world(world)
+		_socket(ioCtx), _world(world), _ressources(ressources)
 		{
 			_socket.open(udp::v4());
 		}

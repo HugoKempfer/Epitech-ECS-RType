@@ -19,24 +19,15 @@
 #include <boost/shared_ptr.hpp>
 #include <boost/asio.hpp>
 
+#include "network/inetwork.hpp"
 #include "network/message.hpp"
+#include "engine/definitions.hpp"
+#include "network/serialize.hpp"
+#include "engine/world.hpp"
 
 using boost::asio::ip::udp;
 
 namespace Engine { class World; }
-
-namespace Engine::Network
-{
-	class IUDPNetwork
-	{
-	public:
-		IUDPNetwork() = default;
-		virtual ~IUDPNetwork() = default;
-
-		virtual void setupConnection() = 0;
-	};
-
-} /* Engine::Network */
 
 namespace Engine::Network::Server
 {
@@ -92,21 +83,36 @@ namespace Engine::Network::Server
 	public:
 		using ClientStorage = std::unordered_map<int64_t, Client>;
 		UDPServer() = delete;
-		UDPServer(World &world, boost::asio::io_context &ioCtx, unsigned short port);
+		UDPServer(World &world, boost::asio::io_context &ioCtx, unsigned short port,
+				RessourceStorage &ressources);
 
 		void listenForClients();
 		void setupConnection() final;
 		Client &getClient(int64_t id) { return _clients.at(id); }
 		void broadcastMsg(Message &);
+
 		std::pair<ClientStorage::iterator, ClientStorage::iterator> getClients() noexcept
 		{
 			return {_clients.begin(), _clients.end()};
+		}
+
+		template <typename UUID>
+		void broadcastEvent(UUID event)
+		{
+			auto factoryUUID = _world.uuidCtx.get<SerializationFactory<UUID>>();
+
+			try {
+				auto &factory = _ressources.at(factoryUUID);
+			} catch(std::out_of_range &e) {
+				throw std::runtime_error("UUID requested not handled");
+			}
 		}
 
 	private:
 		void acceptNewClient(boost::system::error_code const &err, size_t size);
 
 		World &_world;
+		RessourceStorage &_ressources;
 		udp::endpoint _newRemoteEndpoint;
 		int64_t _clientIdAI = 0;
 		ClientStorage _clients;
@@ -125,9 +131,16 @@ namespace Engine::Network::Client
 	{
 	public:
 		UDPClient() = delete;
-		UDPClient(World &world, boost::asio::io_context &ioCtx, std::string host, std::string port);
+		UDPClient(World &world, boost::asio::io_context &ioCtx, std::string host,
+				std::string port, RessourceStorage &ressources);
 
 		void setupConnection() final;
+
+		template <typename UUID, typename T>
+		void broadcastEvent(T event)
+		{
+			/* const int64_t factoryUUID = _world; */
+		}
 
 	private:
 		void listenServerMsg();
@@ -135,6 +148,7 @@ namespace Engine::Network::Client
 		void sendMsgCallback(Message msg, const boost::system::error_code &, size_t);
 
 		World &_world;
+		RessourceStorage &_ressources;
 		udp::resolver _resolver;
 		udp::endpoint _serverEndpoint;
 		udp::socket _socket;

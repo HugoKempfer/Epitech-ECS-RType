@@ -10,8 +10,9 @@
 
 #include <memory>
 #include "engine/prelude.hpp"
-#include "network/network_container.hpp"
 #include "engine/ressource.hpp"
+#include "network/network_container.hpp"
+#include "network/socket.hpp"
 
 using Engine::System;
 

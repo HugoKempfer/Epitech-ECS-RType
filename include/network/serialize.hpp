@@ -18,7 +18,7 @@
 
 #include "engine/concepts_impl.hpp"
 #include "engine/uuid.hpp"
-#include "network/socket.hpp"
+#include "network/message.hpp"
 
 namespace Engine::Network
 {

@@ -24,7 +24,7 @@ public:
 	enum Damn { DAMN, WOW };
 	void onStart() final
 	{
-		_world.network.openAsServer<Damn>(12343);
+		_world.network.openAsServer(12343);
 	}
 
 	void onUpdate() final

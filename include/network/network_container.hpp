@@ -9,9 +9,13 @@
 #define NETWORK_CONTAINER_HPP_EGUMDX5V
 
 #include <variant>
+#include <thread>
 
-#include "network/socket.hpp"
+#include <boost/asio.hpp>
+
+#include "network/inetwork.hpp"
 #include "network/serialize.hpp"
+#include "engine/definitions.hpp"
 
 namespace Engine {
 	class World;
@@ -20,6 +24,9 @@ namespace Engine {
 
 namespace Engine::Network
 {
+	namespace Client { class UDPClient; }
+	namespace Server { class UDPServer; }
+
 	/**
 	 * @brief network abstraction for UDP server/client
 	 */
@@ -29,47 +36,32 @@ namespace Engine::Network
 		enum ConnectionState {CLOSED, SERVER, CLIENT};
 		using Client = Engine::Network::Client::UDPClient;
 		using Server = Engine::Network::Server::UDPServer;
-		using NetContainer = std::variant<Client, Server>;
+		//Notice the use of raw pointer here because of std::variant not accepting
+		//std::reference_wrapper
+		using NetContainer = std::variant<std::monostate,
+			  Client *, Server *>;
 
 		NetworkContainer() = delete;
 		~NetworkContainer();
-		NetworkContainer(World &world) : _world(world), _container(nullptr)
+		NetworkContainer(World &world, RessourceStorage &ressources) :
+			_world(world), _ressources(ressources)
 		{}
 
 		bool isConnectionOpened() const;
+
 		/** @brief Connect to a distant server
 		 *
 		 * @param host server ipv4
 		 * @param port server port
 		 */
-		template <typename UUID>
-		void openAsClient(std::string &host, std::string port)
-		{
-			if (_connectionState != CLOSED) {
-				throw std::runtime_error("Connection already opened");
-			}
-			_connectionState = CLIENT;
-			_container = std::make_unique<NetContainer>(Client(_world, _ioCtx, host, port));
-			_socketRef = std::get<Server>(*_container);
-			_thread = std::make_unique<std::thread>(&NetworkContainer::scheduleNetwork, this);
-		}
+		void openAsClient(std::string &host, std::string port);
 
 		/**
 		 * @brief Open a connection and listen for clients
 		 *
 		 * @param port port to bind the service
 		 */
-		template <typename UUID>
-		void openAsServer(unsigned short port)
-		{
-			if (_connectionState != CLOSED) {
-				throw std::runtime_error("Connection already opened");
-			}
-			_connectionState = SERVER;
-			_container = std::make_unique<NetContainer>(Server(_world, _ioCtx, port));
-			_socketRef = std::get<Server>(*_container);
-			_thread = std::make_unique<std::thread>(&NetworkContainer::scheduleNetwork, this);
-		}
+		void openAsServer(unsigned short port);
 
 		/**
 		 * @brief Close the active connection and reset the network
@@ -96,9 +88,10 @@ namespace Engine::Network
 		void scheduleNetwork();
 
 		World &_world;
+		RessourceStorage &_ressources;
 		enum ConnectionState _connectionState = CLOSED;
-		std::optional<std::reference_wrapper<IUDPNetwork>> _socketRef = std::nullopt;
-		std::unique_ptr<NetContainer> _container;
+		std::unique_ptr<IUDPNetwork> _socketRef = nullptr;
+		NetContainer _container;
 		std::unique_ptr<std::thread> _thread = nullptr;
 		boost::asio::io_context _ioCtx;
 	};
