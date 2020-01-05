@@ -15,6 +15,7 @@
 #include <sstream>
 #include <cassert>
 #include <unordered_map>
+#include <functional>
 
 #include "engine/concepts_impl.hpp"
 #include "engine/uuid.hpp"
@@ -92,6 +93,13 @@ namespace Engine::Network
 	public:
 		SerializationFactory() = delete;
 		SerializationFactory(UUIDContext &ctx) : _uuidCtx(ctx) {}
+		SerializationFactory(UUIDContext &ctx,
+				std::function<void(SerializationFactory<UUID> &)> initializator)
+			: _uuidCtx(ctx)
+		{
+			initializator(*this);
+		}
+
 		~SerializationFactory() = default;
 
 		/**

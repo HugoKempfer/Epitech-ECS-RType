@@ -9,6 +9,8 @@
 #define MESSAGE_DISPATCHING_BUNDLE_HPP_QKV1GY6E
 
 #include <memory>
+#include <functional>
+
 #include "engine/prelude.hpp"
 #include "engine/bundle.hpp"
 #include "network/network_container.hpp"
@@ -21,9 +23,10 @@ namespace Engine::Network
 	{
 	public:
 		MessageDispatchingBundle() = delete;
-		MessageDispatchingBundle(World &world) : Bundle(world)
+		MessageDispatchingBundle(World &world,
+				std::function<void(SerializationFactory<UUID> &)> init) : Bundle(world)
 		{
-			_factory = std::make_shared<SerializationFactory<UUID>>(world);
+			_factory = std::make_shared<SerializationFactory<UUID>>(world, init);
 		}
 
 		void registerRessources(World &world) final
