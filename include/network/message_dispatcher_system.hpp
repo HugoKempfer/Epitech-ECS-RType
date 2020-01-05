@@ -63,8 +63,8 @@ namespace Engine::Network
 						/* TODO: Handle client message handling */
 					}
 					break;
-					/* case NetworkContainer::CLOSED: */
-					/* 	break; */
+				case NetworkContainer::CLOSED:
+					break;
 			}
 		}
 

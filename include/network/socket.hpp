@@ -23,7 +23,7 @@
 #include "network/message.hpp"
 #include "engine/definitions.hpp"
 #include "network/serialize.hpp"
-#include "engine/world.hpp"
+#include "engine/prelude.hpp"
 
 using boost::asio::ip::udp;
 
@@ -96,13 +96,17 @@ namespace Engine::Network::Server
 			return {_clients.begin(), _clients.end()};
 		}
 
-		template <typename UUID>
+		template <typename UUID, typename T>
 		void broadcastEvent(UUID event)
 		{
 			auto factoryUUID = _world.uuidCtx.get<SerializationFactory<UUID>>();
 
 			try {
-				auto &factory = _ressources.at(factoryUUID);
+				auto &factory = _ressources.at(factoryUUID)->template
+					cast<SerializationFactory<UUID>>();
+				auto ar = factory.template serialize<T>(event);
+				auto msg = ar.toMessage();
+				this->broadcastMsg(msg);
 			} catch(std::out_of_range &e) {
 				throw std::runtime_error("UUID requested not handled");
 			}
@@ -139,7 +143,16 @@ namespace Engine::Network::Client
 		template <typename UUID, typename T>
 		void broadcastEvent(T event)
 		{
-			/* const int64_t factoryUUID = _world; */
+			const int64_t factoryUUID = _world.uuidCtx.get<SerializationFactory<UUID>>();
+
+			try {
+				auto &factory = _ressources.at(factoryUUID)->template
+					cast<SerializationFactory<UUID>>();
+				auto ar = factory.template serialize<T>(event);
+				auto msg = ar.toMessage();
+				/* TODO: Send message to server */
+			} catch(std::out_of_range &e) {
+			}
 		}
 
 	private:

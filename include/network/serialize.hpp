@@ -63,6 +63,14 @@ namespace Engine::Network
 			return payload;
 		}
 
+		Message toMessage() const
+		{
+			return {
+				{MessageType::UNRELIABLE_MESSAGE, this->size, this->typeUUID},
+				{_stream}
+			};
+		}
+
 		const UUID typeUUID;
 		const size_t size;
 	protected:
