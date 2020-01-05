@@ -18,8 +18,9 @@
 namespace Engine::Network::Server
 {
 
-	UDPServer::UDPServer(World &world, boost::asio::io_context &ioCtx, unsigned short port)
-		: _socket(ioCtx, udp::endpoint(udp::v4(), port)), _world(world)
+	UDPServer::UDPServer(World &world, boost::asio::io_context &ioCtx,
+			unsigned short port, RessourceStorage &ressources)
+		: _socket(ioCtx, udp::endpoint(udp::v4(), port)), _world(world), _ressources(ressources)
 	{}
 
 	void UDPServer::setupConnection()
@@ -54,7 +55,12 @@ namespace Engine::Network::Server
 		this->listenForClients();
 	}
 
-
+	void UDPServer::broadcastMsg(Message &msg)
+	{
+		for (auto &client : _clients) {
+			client.second.doSendMsg(msg);
+		}
+	}
 
 	void Client::listenForMsg()
 	{
@@ -81,19 +87,6 @@ namespace Engine::Network::Server
 					boost::asio::placeholders::bytes_transferred));
 	}
 
-	std::optional<Message> Client::pollMsg()
-	{
-		if (!_incomingMsg.size()) {
-			return {std::nullopt};
-		}
-		{
-			std::lock_guard<std::mutex> msgProcess(_msgMutex);
-			auto msg = std::make_optional<Message>(_incomingMsg.front());
-			_incomingMsg.pop();
-			return msg;
-		}
-	}
-
 	void Client::sendMsgCallback(Message msg, const boost::system::error_code &err, size_t size)
 	{
 		/* TODO: Handle err */
@@ -116,10 +109,7 @@ namespace Engine::Network::Server
 		for (auto it = sizeof(MessageHeader); it < hdr->payloadSize; ++it) {
 			msg.payload.push_back(static_cast<std::byte>(_rcvBuff.at(it)));
 		}
-		{
-			std::lock_guard<std::mutex> msgLock(_msgMutex);
-			_incomingMsg.push(msg);
-		}
+		this->addToInbox(msg);
 		this->listenForMsg();
 	}
 
@@ -127,9 +117,10 @@ namespace Engine::Network::Server
 
 namespace Engine::Network::Client
 {
-	UDPClient::UDPClient(World &world, boost::asio::io_context &ioCtx, std::string host, std::string port)
+	UDPClient::UDPClient(World &world, boost::asio::io_context &ioCtx,
+			std::string host, std::string port, RessourceStorage &ressources)
 		: _resolver(ioCtx), _serverEndpoint(*_resolver.resolve({udp::v4(), host, port})),
-		_socket(ioCtx), _world(world)
+		_socket(ioCtx), _world(world), _ressources(ressources)
 		{
 			_socket.open(udp::v4());
 		}
@@ -137,6 +128,20 @@ namespace Engine::Network::Client
 	void UDPClient::setupConnection()
 	{
 		this->listenServerMsg();
+	}
+
+	void UDPClient::doSendMsg(Message &msg)
+	{
+		auto buff = std::make_shared<std::vector<std::byte>>(msg.getMessageBuffer());
+
+		_socket.async_send_to(boost::asio::buffer(*buff),
+				_serverEndpoint,
+				boost::bind(
+					&UDPClient::sendMsgCallback,
+					this,
+					msg,
+					boost::asio::placeholders::error,
+					boost::asio::placeholders::bytes_transferred));
 	}
 
 	void UDPClient::listenServerMsg()
@@ -149,9 +154,20 @@ namespace Engine::Network::Client
 					placeholders::bytes_transferred));
 	}
 
-	void UDPClient::rcvMsgCallback(const boost::system::error_code &, size_t)
+	void UDPClient::rcvMsgCallback(const boost::system::error_code &, size_t size)
 	{
-		/* TODO: Handle server msg */
+		Message msg;
+		MessageHeader *hdr = reinterpret_cast<MessageHeader *>(_rcvBuff.c_array());
+		std::cout << "Received a message" << std::endl;
+		std::cout << "Lenght => " << hdr->payloadSize << std::endl;
+		if (sizeof(MessageHeader) + hdr->payloadSize != size) {
+			std::cerr << "SIZE MISMATCH" << std::endl;
+		}
+		msg.header = *hdr;
+		for (auto it = sizeof(MessageHeader); it < hdr->payloadSize; ++it) {
+			msg.payload.push_back(static_cast<std::byte>(_rcvBuff.at(it)));
+		}
+		this->addToInbox(msg);
 		this->listenServerMsg();
 	}
 

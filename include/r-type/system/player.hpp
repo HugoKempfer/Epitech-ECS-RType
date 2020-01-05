@@ -15,6 +15,7 @@
 #include "render/sprite_component.hpp"
 #include "engine/built_in/component/position.hpp"
 #include "r-type/component/player.hpp"
+#include "engine/world.hpp"
 
 using Engine::Component;
 using Engine::System;

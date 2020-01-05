@@ -84,7 +84,7 @@ namespace Engine
 		std::unordered_map<int64_t, std::vector<std::reference_wrapper<ISubscribe>>>
 			_listeners;
 
-		friend World;
+		friend class World;
 	};
 
 } /* Engine */

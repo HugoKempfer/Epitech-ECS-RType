@@ -14,17 +14,15 @@
 #include <memory>
 #include <sstream>
 #include <cassert>
+#include <unordered_map>
+#include <functional>
+
 #include "engine/concepts_impl.hpp"
-#include "engine/prelude.hpp"
+#include "engine/uuid.hpp"
+#include "network/message.hpp"
 
 namespace Engine::Network
 {
-	template <typename S>
-	concept serializable =
-		std::is_pod<S>::value &&
-		std::is_default_constructible<S>::value &&
-		std::is_literal_type<S>::value;
-
 	/**
 	 * @brief Opaque type containing a serialized object
 	 */
@@ -39,6 +37,12 @@ namespace Engine::Network
 			typeUUID(uuid), size(size)
 		{
 			this->encode(payload);
+		}
+
+		Archive(Engine::Network::Message &msg) :
+			typeUUID(msg.header.type), size(msg.header.payloadSize)
+		{
+			this->encode(msg.payload.data());
 		}
 
 		virtual ~Archive() = default;
@@ -60,6 +64,14 @@ namespace Engine::Network
 			return payload;
 		}
 
+		Message toMessage() const
+		{
+			return {
+				{MessageType::UNRELIABLE_MESSAGE, this->size, this->typeUUID},
+				{_stream}
+			};
+		}
+
 		const UUID typeUUID;
 		const size_t size;
 	protected:
@@ -72,15 +84,22 @@ namespace Engine::Network
 		}
 	};
 
+	/**
+	 * @brief Container which handle the (De)serialization for a set of class
+	 */
 	template <typename UUID> requires std::is_enum<UUID>::value
-		/**
-		 * @brief Container which handle the (De)serialization for a set of class
-		 */
 	class SerializationFactory
 	{
 	public:
 		SerializationFactory() = delete;
 		SerializationFactory(UUIDContext &ctx) : _uuidCtx(ctx) {}
+		SerializationFactory(UUIDContext &ctx,
+				std::function<void(SerializationFactory<UUID> &)> initializator)
+			: _uuidCtx(ctx)
+		{
+			initializator(*this);
+		}
+
 		~SerializationFactory() = default;
 
 		/**
@@ -111,7 +130,7 @@ namespace Engine::Network
 		{
 			try {
 				auto &type = _serializeFrom.at(_uuidCtx.get<T>());
-				return Archive<UUID>(type.first, type.second,
+				return this->createArchive(type.first, type.second,
 						reinterpret_cast<void const * const>(&payload));
 			} catch (std::out_of_range &e) {
 				throw std::runtime_error("Requested type not handled by factory");
@@ -124,6 +143,11 @@ namespace Engine::Network
 		}
 
 	private:
+		Archive<UUID> createArchive(UUID uuid, size_t size, void const * const payload) const
+		{
+			return Archive<UUID>(uuid, size, payload);
+		}
+
 		std::unordered_map<UUID, std::pair<int64_t, size_t>> _deserializeFrom;
 		std::unordered_map<int64_t, std::pair<UUID, size_t>> _serializeFrom;
 		UUIDContext &_uuidCtx;

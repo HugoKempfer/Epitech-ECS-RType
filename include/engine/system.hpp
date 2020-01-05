@@ -31,7 +31,8 @@ namespace Engine
 
 	public:
 		System() = delete;
-		System(World &, std::unordered_set<int64_t> components,
+		System(World &,
+				std::unordered_set<int64_t> components,
 				std::unordered_set<int64_t> ressources,
 				std::unordered_set<int64_t> execOnState);
 

@@ -5,35 +5,51 @@
 ** System's embeded UDP socket
 */
 
-#ifndef NETWORK_SYSTEM_HPP_DY3USCMH
-#define NETWORK_SYSTEM_HPP_DY3USCMH
+#ifndef NETWORK_CONTAINER_HPP_EGUMDX5V
+#define NETWORK_CONTAINER_HPP_EGUMDX5V
 
 #include <variant>
+#include <thread>
 
-#include "network/socket.hpp"
+#include <boost/asio.hpp>
 
-namespace Engine { class World; }
+#include "network/inetwork.hpp"
+#include "network/serialize.hpp"
+#include "engine/definitions.hpp"
+
+namespace Engine {
+	class World;
+	class System;
+}
 
 namespace Engine::Network
 {
+	namespace Client { class UDPClient; }
+	namespace Server { class UDPServer; }
+
 	/**
 	 * @brief network abstraction for UDP server/client
 	 */
 	class NetworkContainer
 	{
 	public:
+		enum ConnectionState {CLOSED, SERVER, CLIENT};
 		using Client = Engine::Network::Client::UDPClient;
 		using Server = Engine::Network::Server::UDPServer;
-		using NetContainer = std::variant<Client, Server>;
+		//Notice the use of raw pointer here because of std::variant not accepting
+		//std::reference_wrapper
+		using NetContainer = std::variant<std::monostate,
+			  Client *, Server *>;
 
 		NetworkContainer() = delete;
 		~NetworkContainer();
-		NetworkContainer(World &world) : _world(world), _container(nullptr)
+		NetworkContainer(World &world, RessourceStorage &ressources) :
+			_world(world), _ressources(ressources)
 		{}
 
 		bool isConnectionOpened() const;
-		/**
-		 * @brief Connect to a distant server
+
+		/** @brief Connect to a distant server
 		 *
 		 * @param host server ipv4
 		 * @param port server port
@@ -66,21 +82,19 @@ namespace Engine::Network
 		 */
 		Client &getAsClient();
 
+		ConnectionState getConnectionState() const { return _connectionState; }
+
 	private:
 		void scheduleNetwork();
 
 		World &_world;
-		enum {CLOSED, SERVER, CLIENT} _connectionState = CLOSED;
-		std::optional<std::reference_wrapper<IUDPNetwork>> _socketRef = std::nullopt;
-		std::unique_ptr<NetContainer> _container;
+		RessourceStorage &_ressources;
+		enum ConnectionState _connectionState = CLOSED;
+		std::unique_ptr<IUDPNetwork> _socketRef = nullptr;
+		NetContainer _container;
 		std::unique_ptr<std::thread> _thread = nullptr;
 		boost::asio::io_context _ioCtx;
 	};
-} /* Engine::Network */
+}
 
-namespace Engine::Network::Server
-{
-	/* TODO: Implement system for message dispatching */
-} /* Engine::Network::Server */
-
-#endif /* end of include guard: NETWORK_SYSTEM_HPP_DY3USCMH */
+#endif /* end of include guard: NETWORK_CONTAINER_HPP_EGUMDX5V */
