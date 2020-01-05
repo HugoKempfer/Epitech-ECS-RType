@@ -87,19 +87,6 @@ namespace Engine::Network::Server
 					boost::asio::placeholders::bytes_transferred));
 	}
 
-	std::optional<Message> Client::pollMsg()
-	{
-		if (!_incomingMsg.size()) {
-			return {std::nullopt};
-		}
-		{
-			std::lock_guard<std::mutex> msgProcess(_msgMutex);
-			auto msg = std::make_optional<Message>(_incomingMsg.front());
-			_incomingMsg.pop();
-			return msg;
-		}
-	}
-
 	void Client::sendMsgCallback(Message msg, const boost::system::error_code &err, size_t size)
 	{
 		/* TODO: Handle err */
@@ -122,10 +109,7 @@ namespace Engine::Network::Server
 		for (auto it = sizeof(MessageHeader); it < hdr->payloadSize; ++it) {
 			msg.payload.push_back(static_cast<std::byte>(_rcvBuff.at(it)));
 		}
-		{
-			std::lock_guard<std::mutex> msgLock(_msgMutex);
-			_incomingMsg.push(msg);
-		}
+		this->addToInbox(msg);
 		this->listenForMsg();
 	}
 
@@ -146,6 +130,20 @@ namespace Engine::Network::Client
 		this->listenServerMsg();
 	}
 
+	void UDPClient::doSendMsg(Message &msg)
+	{
+		auto buff = std::make_shared<std::vector<std::byte>>(msg.getMessageBuffer());
+
+		_socket.async_send_to(boost::asio::buffer(*buff),
+				_serverEndpoint,
+				boost::bind(
+					&UDPClient::sendMsgCallback,
+					this,
+					msg,
+					boost::asio::placeholders::error,
+					boost::asio::placeholders::bytes_transferred));
+	}
+
 	void UDPClient::listenServerMsg()
 	{
 		using namespace boost::asio;
@@ -156,9 +154,20 @@ namespace Engine::Network::Client
 					placeholders::bytes_transferred));
 	}
 
-	void UDPClient::rcvMsgCallback(const boost::system::error_code &, size_t)
+	void UDPClient::rcvMsgCallback(const boost::system::error_code &, size_t size)
 	{
-		/* TODO: Handle server msg */
+		Message msg;
+		MessageHeader *hdr = reinterpret_cast<MessageHeader *>(_rcvBuff.c_array());
+		std::cout << "Received a message" << std::endl;
+		std::cout << "Lenght => " << hdr->payloadSize << std::endl;
+		if (sizeof(MessageHeader) + hdr->payloadSize != size) {
+			std::cerr << "SIZE MISMATCH" << std::endl;
+		}
+		msg.header = *hdr;
+		for (auto it = sizeof(MessageHeader); it < hdr->payloadSize; ++it) {
+			msg.payload.push_back(static_cast<std::byte>(_rcvBuff.at(it)));
+		}
+		this->addToInbox(msg);
 		this->listenServerMsg();
 	}
 

@@ -27,8 +27,6 @@ namespace Engine::Network
 		const int64_t clientId;
 	};
 
-	/* TODO: Implement network events */
-
 } /* Engine::Network */
 
 #endif /* end of include guard: NETWORK_EVENTS_HPP_V87MD4NE */

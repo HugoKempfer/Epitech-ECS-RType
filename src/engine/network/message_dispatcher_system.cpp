@@ -11,9 +11,9 @@
 namespace Engine::Network
 {
 	template <typename UUID>
-	void MessageDispatcherSystem<UUID>::dispatchMessage(Server::Client &client)
+	void MessageDispatcherSystem<UUID>::dispatchMessage(MessageInbox &inbox)
 	{
-		while (auto message = client.pollMsg()) {
+		while (auto message = inbox.checkInbox()) {
 			Archive<UUID> ar(message);
 		}
 	}

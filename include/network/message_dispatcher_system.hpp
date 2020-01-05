@@ -60,7 +60,7 @@ namespace Engine::Network
 				case NetworkContainer::CLIENT:
 					{
 						auto &client = _world.network.getAsClient();
-						/* TODO: Handle client message handling */
+						this->dispatchMessage(client);
 					}
 					break;
 				case NetworkContainer::CLOSED:
@@ -69,7 +69,7 @@ namespace Engine::Network
 		}
 
 	private:
-		void dispatchMessage(Server::Client &);
+		void dispatchMessage(MessageInbox &);
 	};
 } /* Engine::Network */
 

@@ -29,6 +29,22 @@ using boost::asio::ip::udp;
 
 namespace Engine { class World; }
 
+namespace Engine::Network
+{
+	class MessageInbox
+	{
+	public:
+		MessageInbox() = default;
+
+		void addToInbox(Message &msg);
+		std::optional<Message> checkInbox();
+
+	private:
+		std::mutex _msgMutex;
+		std::queue<Message> _incomingMsg;
+	};
+} /* Engine::Network */
+
 namespace Engine::Network::Server
 {
 	using Message = Engine::Network::Message;
@@ -37,7 +53,7 @@ namespace Engine::Network::Server
 	/**
 	 * @brief Client representation for UDPServer
 	 */
-	class Client
+	class Client : public MessageInbox
 	{
 	public:
 		Client (int64_t id, udp::endpoint endpoint, udp::socket &socket) :
@@ -52,13 +68,6 @@ namespace Engine::Network::Server
 		 */
 		void doSendMsg(Message msg);
 
-		/**
-		 * @brief Try to get one client Message
-		 *
-		 * @return Monad holding a potential Client Message
-		 */
-		std::optional<Message> pollMsg();
-
 		const int64_t id;
 
 	private:
@@ -67,7 +76,6 @@ namespace Engine::Network::Server
 		void sendMsgCallback(Message msg, const boost::system::error_code &, size_t);
 
 		std::mutex _msgMutex;
-		std::queue<Message> _incomingMsg;
 		udp::socket &_socket;
 		udp::endpoint _endpoint;
 		boost::array<char, USHRT_MAX> _rcvBuff;
@@ -131,7 +139,7 @@ namespace Engine::Network::Client
 	/**
 	 * @brief UDP client for client-side connection
 	 */
-	class UDPClient : public IUDPNetwork
+	class UDPClient : public IUDPNetwork, public MessageInbox
 	{
 	public:
 		UDPClient() = delete;
@@ -150,13 +158,21 @@ namespace Engine::Network::Client
 					cast<SerializationFactory<UUID>>();
 				auto ar = factory.template serialize<T>(event);
 				auto msg = ar.toMessage();
-				/* TODO: Send message to server */
+				this->doSendMsg(msg);
 			} catch(std::out_of_range &e) {
 			}
 		}
 
+		/**
+		 * @brief Try to get one server Message
+		 *
+		 * @return Option holding a potential Client Message
+		 */
+		std::optional<Message> pollMsg();
+
 	private:
 		void listenServerMsg();
+		void doSendMsg(Message &);
 		void rcvMsgCallback(const boost::system::error_code &, size_t);
 		void sendMsgCallback(Message msg, const boost::system::error_code &, size_t);
 
