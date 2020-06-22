@@ -7,7 +7,7 @@ I chose to make an implementation proposal for the *E*ntity *C*omponent *S*ystem
 A lot of inspiration came from the Rust Amethyst project and more specifically its SpECS module.
 
 This architectural pattern mostly follows the Mixin design and composition over inheritance movance.
-All relations between entities and components are made at runtime and are so called dynamic, which offers a lot of advantages in game design.
+All relations between entities and components are made at runtime and are so called dynamic, which offers a lot of advantages in game programming.
 
 https://en.wikipedia.org/wiki/Entity_component_system
 
@@ -28,10 +28,10 @@ The states can implements hooks:
 - onStart
 - onUpdate (executed each cycle)
 - onPause (called when a state is pushed)
-- onResumt (called when the top state is popped)
+- onResume (called when the top state is popped)
 - onStop
 
-The state is instanciated through the world.states.push<StateClass>().
+The state is instantiated through the world.states.push<StateClass>().
 Or by emplacing the current state with world.states.emplace<StateClass> (replaces the current state).
 
 ### Entity
@@ -44,19 +44,19 @@ An entity can be created with `world.entity.add()`
 ### Component
 
 A component is a data class attached to a specific entity.
-Its goal is to store logic data that will be manipulated though systems.
+Its goal is to store a logic state that will be manipulated though systems.
 
 A component should stick to a limited logic concern.
-For example you should create two separated components to represent an entity position and dimentions.
+For example you should create two separated components to represent an entity position and dimensions.
 
 #### Example of entity creation with components:
 
-```
+```cpp
 	_world.entities.add()
 		.addComponent<BulletComponent>(_world, BulletComponent::RIGHT)
 		.addComponent<Engine::PositionComponent>(_world, player.pos_x, player.pos_y)
 		.addComponent<SpriteComponent>(_world, "Damn.png", 15, 20);
-		```
+```
 
 ### Queries
 
@@ -64,12 +64,12 @@ Your systems can retrieve a set of entities and its components from a query.
 Only component intersection queries are supported.
 
 An example query to get *bullets* in the RType game:
-```c++
 
+```cpp
 	auto entities = _world.entities.query(*this)
 		.with<Engine::PositionComponent>()
 		.with<BulletComponent>().getIntersection();
-		```
+```
 
 ### Systems
 
@@ -77,21 +77,21 @@ A system is a class where you can implement you game logic.
 To do so you must implement a method `void run() final`.
 
 When declaring a system you must provide a set of Components types you want to act on.
-As said, at construction-time you can ask the engine an access on `Ressource`.
+As said, at construction-time you can ask the engine an access on `Resource`.
 
 The systems are executed on each cycle in parallel as long as there is at least one active `State`.
-Finally the `System` runs independantly of the `State`. If you want to restrict the state on which your system run on, you can provide this set of `State` using a dedicated constructor.
+Finally the `System` runs independently of the `State`. If you want to restrict the state on which your system run on, you can provide this set of `State` using a dedicated constructor.
 
-As you provide to the engine every dependance your system needs, you don't have to worry about data races issues tied to components/ressources access.
+As you provide to the engine every dependence your system needs, you don't have to worry about data races issues tied to components/resources access.
 
-### Ressource
+### Resource
 
-A ressource is very similar to a component.
+A resource is very similar to a component.
 Its purpose is to represent a state no tied to a specific entity.
 
 ### Events
 
-The events are a unidirectional way to do message passing between systems and states.
+The events are an unidirectional way to do message passing between systems and states.
 
 You create your own event by inheriting the `Engine::Event<YourClass>`.
 
@@ -108,10 +108,11 @@ Here is a non-exhaustive list :
 
 ### Bundle
 
-The bundles aims to register the Systems/Ressources/Entities by concern.
+The bundles aims to register the Systems/Resources/Entities by concern.
 For example you can group your PlayerSystem, PlayerRessources in a PlayerBundle.
 
 You can use a bundle with the `world.useBundle<Bundle>(void)`.
 
 There are a some built-in bundles as :
+
 * RenderBundle
