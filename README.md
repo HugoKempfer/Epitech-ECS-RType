@@ -1,16 +1,29 @@
 # Rtype
 
+## Introduction
+
+This project is a minimal game engine design and implementation.
+I chose to make an implementation proposal for the *E*ntity *C*omponent *S*ystem architecture.
+A lot of inspiration came from the Rust Amethyst project and more specifically its SpECS module.
+
+This architectural pattern mostly follows the Mixin design and composition over inheritance movance.
+All relations between entities and components are made at runtime and are so called dynamic, which offers a lot of advantages in game design.
+
+https://en.wikipedia.org/wiki/Entity_component_system
+
+This project is made with C++ 20.
+
 ## ECS implementation
 
 ### State
 
 It represents a "phase" of the game (ex: loading scene, player awating scene, boss scene, score scene).
-The engine stops when it remains no active states.
+The engine stops when no active states remains.
 There can be only one active state at one time.
 
 #### specific features
 
-The states can implements hooks :
+The states can implements hooks:
 
 - onStart
 - onUpdate (executed each cycle)
@@ -36,6 +49,28 @@ Its goal is to store logic data that will be manipulated though systems.
 A component should stick to a limited logic concern.
 For example you should create two separated components to represent an entity position and dimentions.
 
+#### Example of entity creation with components:
+
+```
+	_world.entities.add()
+		.addComponent<BulletComponent>(_world, BulletComponent::RIGHT)
+		.addComponent<Engine::PositionComponent>(_world, player.pos_x, player.pos_y)
+		.addComponent<SpriteComponent>(_world, "Damn.png", 15, 20);
+		```
+
+### Queries
+
+Your systems can retrieve a set of entities and its components from a query.
+Only component intersection queries are supported.
+
+An example query to get *bullets* in the RType game:
+```c++
+
+	auto entities = _world.entities.query(*this)
+		.with<Engine::PositionComponent>()
+		.with<BulletComponent>().getIntersection();
+		```
+
 ### Systems
 
 A system is a class where you can implement you game logic.
@@ -52,7 +87,7 @@ As you provide to the engine every dependance your system needs, you don't have 
 ### Ressource
 
 A ressource is very similar to a component.
-Its purpose is the hold data no tied to a specific entity.
+Its purpose is to represent a state no tied to a specific entity.
 
 ### Events
 
